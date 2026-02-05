@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# VSCode
+.vscode/
+
+# Environments
+venv/
+.env
+.env.*
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Alembic
+alembic/versions/
+
+# Logs
+*.log
+
+# Static/Media (if any uploads)
+app/static/uploads/
+
+# Test
+.coverage
+htmlcov/
+
+# Misc
+*.bak
+*.swp
+*.tmp
+
+# Pytest cache
+.pytest_cache/
+
+# SQLite DB (있는 경우)
+*.db
+*.sqlite3
