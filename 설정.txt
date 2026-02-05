@@ -1,4 +1,17 @@
 
+app/
+ ├── api/          # 라우터(엔드포인트) 모음
+ ├── core/         # 설정, 환경변수, 보안, CORS, init 관련
+ ├── crud/         # DB CRUD 함수 모음
+ ├── models/       # SQLAlchemy 모델
+ ├── schemas/      # Pydantic 스키마
+ ├── services/     # 비즈니스 로직 (서비스 계층)
+ ├── static/       # CSS, JS, 이미지 (정적 파일)
+ ├── templates/    # Jinja2 HTML 템플릿
+ ├── deps.py       # 의존성(dependencies)
+ └── main.py       # FastAPI 진입점
+----------------------------------------
+
 MySQL의 scott 사용자와 eduDB 연결을 위한 환경설정이 완료되었습니다.
 
 .env에 DB_URL이 추가되어, scott 계정으로 eduDB에 연결합니다.
