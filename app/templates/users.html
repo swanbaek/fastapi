@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원목록</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="menu">
+            <a href="/signup">회원가입</a>
+            <a href="/users/list">회원목록</a>
+            <a href="/login">로그인</a>
+            <a href="/posts">게시판</a>
+            <a href="/mypage">MyPage</a>
+        </div>
+        <div class="logo">EduApp</div>
+    </nav>
+    <div class="container">
+        <h2>회원목록</h2>
+        <table id="usersTable">
+            <thead>
+                <tr style="background:#f6f8fc;">
+                    <th style="padding:8px; border-bottom:1px solid #bfc8e6;">ID</th>
+                    <th style="padding:8px; border-bottom:1px solid #bfc8e6;">이름</th>
+                    <th style="padding:8px; border-bottom:1px solid #bfc8e6;">이메일</th>
+                    <th style="padding:8px; border-bottom:1px solid #bfc8e6;">가입일</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 회원 데이터가 JS로 채워집니다 -->
+            </tbody>
+        </table>
+    </div>
+    <footer>
+        &copy; 2026 EduApp. All rights reserved.
+    </footer>
+    <script>
+        async function fetchUsers() {
+            const res = await fetch('/users');
+            const users = await res.json();
+            const tbody = document.querySelector('#usersTable tbody');
+            tbody.innerHTML = '';
+            users.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="padding:8px; border-bottom:1px solid #e3eafc;">${user.id}</td>
+                    <td style="padding:8px; border-bottom:1px solid #e3eafc;">${user.name}</td>
+                    <td style="padding:8px; border-bottom:1px solid #e3eafc;">${user.email}</td>
+                    <td style="padding:8px; border-bottom:1px solid #e3eafc;">${user.created_at ? user.created_at.replace('T',' ').slice(0,19) : ''}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        fetchUsers();
+    </script>
+</body>
+</html>

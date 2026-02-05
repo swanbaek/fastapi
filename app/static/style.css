@@ -1,0 +1,121 @@
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #e3eafc 0%, #f9f9f9 100%);
+    margin: 0;
+    min-height: 100vh;
+}
+.navbar {
+    background: #222e50;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(34,46,80,0.08);
+}
+.navbar .menu {
+    display: flex;
+    gap: 28px;
+    margin-left: 36px;
+}
+.navbar .menu a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 20px 0;
+    font-size: 17px;
+    transition: color 0.2s;
+}
+.navbar .menu a:hover {
+    color: #ffb400;
+}
+.navbar .logo {
+    font-size: 24px;
+    font-weight: bold;
+    margin-right: 36px;
+    letter-spacing: 1px;
+}
+.main {
+    min-height: 60vh;
+    max-width: 1200px;
+    margin:auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+footer {
+    background: #222e50;
+    color: #fff;
+    text-align: center;
+    padding: 18px 0 12px 0;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    font-size: 15px;
+    box-shadow: 0 -2px 8px rgba(34,46,80,0.08);
+}
+.container {
+    max-width: 600px;
+    min-height: 60vh;
+    margin: 60px auto;
+    background: #fff;
+    padding: 32px 24px;
+    border-radius: 10px;
+    box-shadow: 0 2px 16px rgba(34,46,80,0.10);
+}
+h2 {
+    text-align: center;
+    margin-bottom: 24px;
+    color: #222e50;
+}
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #222e50;
+}
+input[type="text"], input[type="email"], input[type="password"] {
+    width: 96%;
+    padding: 10px;
+    margin-bottom: 16px;
+    border: 1px solid #bfc8e6;
+    border-radius: 5px;
+    font-size: 15px;
+    background: #f6f8fc;
+}
+button {
+    width: 100%;
+    padding: 12px;
+    background: #222e50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 17px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+button:hover {
+    background: #ffb400;
+    color: #222e50;
+}
+.result {
+    margin-top: 18px;
+    text-align: center;
+    color: #222e50;
+    font-weight: 500;
+}
+#signupForm{
+    margin:auto;
+    width:90%; 
+}
+#usersTable{
+    margin:auto;
+    width:90%; 
+    border-collapse:collapse;
+}
+#usersTable td{
+    text-align: center;
+    
+}
