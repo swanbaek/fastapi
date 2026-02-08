@@ -10,3 +10,4 @@ email-validator
 bcrypt
 jinja2
 python-multipart
+itsdangerous

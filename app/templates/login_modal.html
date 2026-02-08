@@ -1,0 +1,65 @@
+<!-- 로그인 모달 (공통) -->
+<div id="loginModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); justify-content:center; align-items:center;">
+    <div style="background:#fff; padding:32px 24px; border-radius:10px; box-shadow:0 2px 16px rgba(34,46,80,0.15); min-width:320px; max-width:90vw; position:relative;">
+        <span id="closeModal" style="position:absolute; top:12px; right:18px; font-size:22px; cursor:pointer;">&times;</span>
+        <h2 style="margin-top:0;">로그인</h2>
+        <form id="loginForm">
+            <label for="loginEmail">이메일</label>
+            <input type="email" id="loginEmail" name="loginEmail" required>
+            <label for="loginPassword">비밀번호</label>
+            <input type="password" id="loginPassword" name="loginPassword" required>
+            <button type="submit">로그인</button>
+        </form>
+        <div class="result" id="loginResult"></div>
+    </div>
+</div>
+<script>
+    // 로그인 모달 열기/닫기
+    document.addEventListener('DOMContentLoaded', function() {
+        const loginLink = document.getElementById('loginLink');
+        if (loginLink) {
+            loginLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('loginModal').style.display = 'flex';
+            });
+        }
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('loginResult').textContent = '';
+            document.getElementById('loginForm').reset();
+        });
+        window.addEventListener('click', function(e) {
+            if (e.target === document.getElementById('loginModal')) {
+                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('loginResult').textContent = '';
+                document.getElementById('loginForm').reset();
+            }
+        });
+        // 로그인 폼 제출
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const loginResultDiv = document.getElementById('loginResult');
+            loginResultDiv.textContent = '로그인 처리 중...';
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                if (response.ok) {
+                    loginResultDiv.textContent = '로그인 성공!';
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 700);
+                } else {
+                    const err = await response.json();
+                    loginResultDiv.textContent = '오류: ' + (err.detail || '로그인 실패');
+                }
+            } catch (error) {
+                loginResultDiv.textContent = '네트워크 오류';
+            }
+        });
+    });
+</script>

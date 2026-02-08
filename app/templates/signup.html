@@ -7,16 +7,7 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="menu">
-            <a href="/signup">회원가입</a>
-            <a href="/users/list">회원목록</a>
-            <a href="/login">로그인</a>
-            <a href="/posts">게시판</a>
-            <a href="/mypage">MyPage</a>
-        </div>
-        <div class="logo">EduApp</div>
-    </nav>
+    {% include 'navbar.html' %}
     <div class="container">
         <h2>회원가입 테스트</h2>
         <form id="signupForm">
@@ -33,6 +24,7 @@
     <footer>
         &copy; 2026 EduApp. All rights reserved.
     </footer>
+    {% include 'login_modal.html' %}
     <script>
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
