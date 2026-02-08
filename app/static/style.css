@@ -121,6 +121,14 @@ body {
     margin-right: 36px;
     letter-spacing: 1px;
 }
+.main{
+    width:80%;
+    max-width: 1200px;
+    margin:auto;
+    /* background-color: #ccc; */
+    padding: 1em;
+    min-height: 88vh;
+}
 
 footer {
     background: #222e50;

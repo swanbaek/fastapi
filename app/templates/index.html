@@ -14,25 +14,27 @@
     </div>
     {% include 'login_modal.html' %}
 
-    <!-- 로그인 모달을 모든 페이지에서 공통으로 띄우는 원리는 다음과 같습니다:
-login_modal.html 분리
-로그인 모달(HTML+JS)을 별도의 템플릿 파일(login_modal.html)로 만들었습니다.
+    {#
+    로그인 모달을 모든 페이지에서 공통으로 띄우는 원리는 다음과 같습니다:
+    login_modal.html 분리
+    로그인 모달(HTML+JS)을 별도의 템플릿 파일(login_modal.html)로 만들었습니다.
 
-공통 템플릿에 include
-각 주요 페이지(users.html, signup.html, index.html 등)에서
-{% include 'login_modal.html' %}
-구문을 사용해 모달 코드를 삽입했습니다.
+    공통 템플릿에 include
+    각 주요 페이지(users.html, signup.html, index.html 등)에서
+    {% include 'login_modal.html' %}
+    구문을 사용해 모달 코드를 삽입했습니다.
 
-공통 메뉴와 이벤트
-모든 페이지의 네비게이션 메뉴에 id="loginLink"가 있는 "로그인" 링크가 있습니다.
-login_modal.html의 JS가 이 id를 찾아 클릭 이벤트를 등록합니다.
+    공통 메뉴와 이벤트
+    모든 페이지의 네비게이션 메뉴에 id="loginLink"가 있는 "로그인" 링크가 있습니다.
+    login_modal.html의 JS가 이 id를 찾아 클릭 이벤트를 등록합니다.
 
-모달 제어
-JS가 로그인 링크 클릭 시 모달을 보여주고, X버튼이나 바깥 클릭 시 닫습니다.
-로그인 폼 제출도 JS에서 처리합니다.
+    모달 제어
+    JS가 로그인 링크 클릭 시 모달을 보여주고, X버튼이나 바깥 클릭 시 닫습니다.
+    로그인 폼 제출도 JS에서 처리합니다.
 
-이렇게 하면 모든 페이지에서 동일한 모달과 스크립트가 동작하게 됩니다.
-템플릿 분리와 include, 그리고 JS의 이벤트 위임이 핵심입니다 -->
+    이렇게 하면 모든 페이지에서 동일한 모달과 스크립트가 동작하게 됩니다.
+    템플릿 분리와 include, 그리고 JS의 이벤트 위임이 핵심입니다
+    #}
     <footer>
         &copy; 2026 EduApp. All rights reserved.
     </footer>
