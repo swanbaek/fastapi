@@ -1,4 +1,4 @@
-# 회원목록 테이블 스타일
+/* # 회원목록 테이블 스타일 */
 .users-table {
     width: 100%;
     border-collapse: collapse;
@@ -84,6 +84,7 @@ body {
     font-family: 'Segoe UI', Arial, sans-serif;
     background: linear-gradient(135deg, #e3eafc 0%, #f9f9f9 100%);
     margin: 0;
+    box-sizing: border-box;
     min-height: 100vh;
 }
 .navbar {
@@ -120,18 +121,12 @@ body {
     margin-right: 36px;
     letter-spacing: 1px;
 }
-.main {
-    min-height: 60vh;
-    max-width: 1200px;
-    margin:auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
+
 footer {
     background: #222e50;
     color: #fff;
+     box-sizing: border-box;
+     margin-bottom: 14px;
     text-align: center;
     padding: 18px 0 12px 0;
     position: fixed;
@@ -146,6 +141,7 @@ footer {
     min-height: 60vh;
     margin: 60px auto;
     background: #fff;
+    box-sizing: border-box;
     padding: 32px 24px;
     border-radius: 10px;
     box-shadow: 0 2px 16px rgba(34,46,80,0.10);
@@ -162,17 +158,21 @@ label {
     color: #222e50;
 }
 input[type="text"], input[type="email"], input[type="password"] {
-    width: 96%;
-    padding: 10px 12px;
-    height: 38px;
+    width: 100%;
+    max-width: 100%;
+    padding: 7px 12px;
+    height: 46px;
     border: 1px solid #bfc8e6;
     border-radius: 5px;
     font-size: 15px;
     background: #f6f8fc;
+    box-sizing: border-box;
 }
 button {
     width: 100%;
-    padding: 12px;
+    max-width: 100%;
+    padding: 12px 0;
+    margin-top: 1em;
     background: #222e50;
     color: #fff;
     border: none;
@@ -181,6 +181,7 @@ button {
     cursor: pointer;
     font-weight: 500;
     transition: background 0.2s;
+    box-sizing: border-box;
 }
 button:hover {
     background: #ffb400;
@@ -193,8 +194,7 @@ button:hover {
     font-weight: 500;
 }
 #signupForm{
-    margin:auto;
-    width:90%; 
+    /* removed for unified form width */
 }
 #usersTable{
     margin:auto;
