@@ -38,7 +38,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, email, password })
-                });
+                });                
                 if (response.ok) {
                     const data = await response.json();
                     resultDiv.textContent = '회원가입 성공! ID: ' + data.id;
