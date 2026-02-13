@@ -8,6 +8,15 @@
 </head>
 <body>
     {% include 'navbar.html' %}
+
+    {% if auth_message %}
+        <div id="authModal" class="modal auth-modal">
+            <div class="auth-modal-content">
+                <h3 class="auth-modal-title">{{ auth_message }}</h3>
+                <button class="auth-modal-btn" onclick="window.location.href='/'">홈으로 이동</button>
+            </div>
+        </div>
+    {% else %}
     <div class="container">
         <h2>마이페이지</h2>
         <div id="userInfoBox">
@@ -34,6 +43,7 @@
         <button id="deleteBtn" style="background:#e53935; margin-top:24px;">회원탈퇴</button>
         <div class="result" id="mypageResult"></div>
     </div>
+    {% endif %}
     <footer>
         &copy; 2026 EduApp. All rights reserved.
     </footer>
@@ -114,7 +124,7 @@
             resultDiv.textContent = '';
             
             try {
-                 const delRes = await fetch('/users/me', {
+                const delRes = await fetch('/users/me', {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password })

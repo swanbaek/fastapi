@@ -37,7 +37,12 @@ async def users_page(request: Request):
 async def mypage(request: Request):
     if not request.session.get("user_id"):
         print("No user_id in session, redirecting to home.")
-        return RedirectResponse("/", status_code=302)
+        # return RedirectResponse("/", status_code=302)
+         # 로그인 안 했으면 안내 메시지와 함께 렌더링
+        return templates.TemplateResponse(
+            "mypage.html",
+            {"request": request, "auth_message": "로그인 해야 이용 가능합니다."}
+        )
     print("user_id found in session:", request.session.get("user_id"))
     return templates.TemplateResponse("mypage.html", {"request": request})
 
