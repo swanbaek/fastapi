@@ -4,7 +4,7 @@ __pycache__/
 *.pyo
 *.pyd
 *.pyc
-
+**/__pycache__/
 # VSCode
 .vscode/
 
