@@ -44,3 +44,4 @@ htmlcov/
 # SQLite DB (있는 경우)
 *.db
 *.sqlite3
+*.bat
