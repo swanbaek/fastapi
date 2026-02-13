@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이페이지</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h2>마이페이지</h2>
+        <div id="userInfoBox">
+            <table class="users-table" style="margin-bottom:32px;">
+                <tr><th>이름</th><td id="myName"></td></tr>
+                <tr><th>이메일</th><td id="myEmail"></td></tr>
+                <tr><th>가입일</th><td id="myCreated"></td></tr>
+            </table>
+        </div>
+        <form id="updateForm">
+            <h3>회원정보 수정</h3>
+            <label for="name">이름</label>
+            <input type="text" id="name" name="name" required>
+            <label for="email">이메일</label>
+            <input type="email" id="email" name="email" required>
+            <label for="password">새 비밀번호 (선택)</label>
+            <input type="password" id="password" name="password" placeholder="변경 시에만 입력">
+            <button type="submit">정보수정</button>
+        </form>
+        <div id="deletePw" style="display: none;">
+            <label for="deletePassword">비밀번호 확인</label>
+            <input type="password" id="deletePassword" name="deletePassword" placeholder="회원탈퇴시 비밀번호 입력" required>
+        </div>
+        <button id="deleteBtn" style="background:#e53935; margin-top:24px;">회원탈퇴</button>
+        <div class="result" id="mypageResult"></div>
+    </div>
+    <footer>
+        &copy; 2026 EduApp. All rights reserved.
+    </footer>
+    {% include 'login_modal.html' %}
+    <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        // 1. 내 정보 불러오기
+        const res = await fetch('/users/me');
+        if (res.ok) {
+            const user = await res.json();
+            document.getElementById('myName').textContent = user.name;
+            document.getElementById('myEmail').textContent = user.email;
+            document.getElementById('myCreated').textContent = user.created_at ? user.created_at.replace('T',' ').slice(0,19) : '';
+            document.getElementById('name').value = user.name;
+            document.getElementById('email').value = user.email;
+        } else {
+            document.getElementById('userInfoBox').innerHTML = '<div class="result">회원 정보를 불러올 수 없습니다.</div>';
+            document.getElementById('updateForm').style.display = 'none';
+            document.getElementById('deleteBtn').style.display = 'none';
+        }
+
+        // 2. 정보수정
+        document.getElementById('updateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const body = { name, email };
+            if (password) body.password = password;
+            const updateRes = await fetch('/users/me', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            const resultDiv = document.getElementById('mypageResult');
+            if (updateRes.ok) {
+                resultDiv.textContent = '정보가 성공적으로 수정되었습니다.';
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                const err = await updateRes.json();
+                resultDiv.textContent = '오류: ' + (err.detail || '수정 실패');
+            }
+        });
+
+        // 3. 회원탈퇴
+        /*document.getElementById('deleteBtn').addEventListener('click', async function() {
+            if (!confirm('정말로 회원탈퇴 하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) return;
+            const delRes = await fetch('/users/me', {
+                method: 'DELETE'
+            });
+            if (delRes.ok) {
+                alert('회원탈퇴가 완료되었습니다.');
+                window.location.href = '/';
+            } else {
+                const err = await delRes.json();
+                document.getElementById('mypageResult').textContent = '오류: ' + (err.detail || '탈퇴 실패');
+            }
+        });*/
+
+        document.getElementById('deleteBtn').addEventListener('click', async function() {
+            if (!confirm('정말로 회원탈퇴 하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                return;
+            }
+            document.querySelector('#deletePw').style.display = 'block';
+            const password = document.getElementById('deletePassword').value;
+            if (!password) {
+                alert('비밀번호를 입력하세요.');
+                return;
+            }
+
+            
+            const deleteBtn = this;
+            const resultDiv = document.getElementById('mypageResult');
+            
+            // 버튼 비활성화 (중복 클릭 방지)
+            deleteBtn.disabled = true;
+            deleteBtn.textContent = '처리 중...';
+            resultDiv.textContent = '';
+            
+            try {
+                 const delRes = await fetch('/users/me', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+                
+                if (delRes.ok || delRes.status === 204) {
+                    alert('회원탈퇴가 완료되었습니다.');
+                    window.location.href = '/';
+                    return;
+                }
+                
+                // 에러 응답 처리
+                let errorMessage = '탈퇴 실패';
+                try {
+                    const err = await delRes.json();
+                    errorMessage = err.detail || errorMessage;
+                } catch (e) {
+                    // JSON 파싱 실패
+                }
+                
+                resultDiv.textContent = '오류: ' + errorMessage;
+                resultDiv.style.color = '#e53935';
+                
+            } catch (error) {
+                console.error('탈퇴 요청 실패:', error);
+                resultDiv.textContent = '오류: 네트워크 문제가 발생했습니다.';
+                resultDiv.style.color = '#e53935';
+            } finally {
+                // 버튼 복구
+                deleteBtn.disabled = false;
+                deleteBtn.textContent = '회원탈퇴';
+            }
+        });
+
+    });
+    </script>
+</body>
+</html>

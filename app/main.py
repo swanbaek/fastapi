@@ -36,7 +36,9 @@ async def users_page(request: Request):
 @app.get("/mypage", response_class=HTMLResponse)
 async def mypage(request: Request):
     if not request.session.get("user_id"):
+        print("No user_id in session, redirecting to home.")
         return RedirectResponse("/", status_code=302)
+    print("user_id found in session:", request.session.get("user_id"))
     return templates.TemplateResponse("mypage.html", {"request": request})
 
 @app.get("/", response_class=HTMLResponse)
