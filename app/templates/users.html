@@ -1,64 +1,55 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>회원목록</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    {% include 'navbar.html' %}
-    
-        {% if auth_message %}
-            <div id="authModal" class="modal auth-modal">
-                <div class="auth-modal-content">
-                    <h3 class="auth-modal-title">{{ auth_message }}</h3>
-                    <button class="auth-modal-btn" onclick="window.location.href='/'">홈으로 이동</button>
-                </div>
+{% extends 'base.html' %}
+
+{% block title %}회원목록{% endblock %}
+
+{% block content %}
+    {% if auth_message %}
+        <div id="authModal" class="modal auth-modal">
+            <div class="auth-modal-content">
+                <h3 class="auth-modal-title">{{ auth_message }}</h3>
+                <button class="auth-modal-btn" onclick="window.location.href='/'">홈으로 이동</button>
             </div>
-        {% else %}
-            <div class="container">
-                <h2>회원목록</h2>
-                <table id="usersTable" class="users-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>이름</th>
-                            <th>이메일</th>
-                            <th>가입일</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- 회원 데이터가 JS로 채워집니다 -->
-                    </tbody>
-                </table>
-            </div>
-        {% endif %}
-    
-    <footer>
-        &copy; 2026 EduApp. All rights reserved.
-    </footer>
-    {% include 'login_modal.html' %}
+        </div>
+    {% else %}
+        <div class="container">
+            <h2>회원목록</h2>
+            <table id="usersTable" class="users-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>이름</th>
+                        <th>이메일</th>
+                        <th>가입일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 회원 데이터가 JS로 채워집니다 -->
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block script %}
+    {% if not auth_message %}
     <script>
-        {% if not auth_message %}
-        async function fetchUsers() {
-            const res = await fetch('/users');
-            const users = await res.json();
-            const tbody = document.querySelector('#usersTable tbody');
-            tbody.innerHTML = '';
-            users.forEach(user => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${user.id}</td>
-                    <td>${user.name}</td>
-                    <td>${user.email}</td>
-                    <td>${user.created_at ? user.created_at.replace('T',' ').slice(0,19) : ''}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-        fetchUsers();
-        {% endif %}
+    async function fetchUsers() {
+        const res = await fetch('/users');
+        const users = await res.json();
+        const tbody = document.querySelector('#usersTable tbody');
+        tbody.innerHTML = '';
+        users.forEach(user => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${user.id}</td>
+                <td>${user.name}</td>
+                <td>${user.email}</td>
+                <td>${user.created_at ? user.created_at.replace('T',' ').slice(0,19) : ''}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+    fetchUsers();
     </script>
-</body>
-</html>
+    {% endif %}
+{% endblock %}
