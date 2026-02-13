@@ -19,6 +19,7 @@ database.py에서 환경변수 기반으로 SQLAlchemy 연결을 생성.
 deps.py에 DB 세션 의존성 함수가 추가되어 FastAPI에서 DB 접근이 가능합니다.
 config.py에서 환경변수 로드 및 DB_URL getter 함수가 추가되었습니다.
 ------------------------------------------
+SQLAlchemy
 
 클라이언트 요청 →  get_db() 실행
                   ├─ db = SessionLocal()        (세션 열기)

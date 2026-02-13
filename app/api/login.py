@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request, Response
-from app.api.users import get_connection
+from app.core.db import get_connection
 import bcrypt
 
 router = APIRouter()
