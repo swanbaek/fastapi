@@ -61,6 +61,7 @@ requirements.txt # 의존성 목록
    ```
 2. 환경변수 설정 (예: .env 파일)
    ```env
+   DB_URL=mysql+pymysql://계정:비밀번호@localhost:3306/데이터베이스명
    MYSQL_HOST=localhost
    MYSQL_USER=youruser
    MYSQL_PASSWORD=yourpassword
