@@ -1,42 +1,38 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>마이페이지</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    {% include 'navbar.html' %}
+{% extends 'base.html' %}
 
-    {% if auth_message %}
-        <div id="authModal" class="modal auth-modal">
-            <div class="auth-modal-content">
-                <h3 class="auth-modal-title">{{ auth_message }}</h3>
-                <button class="auth-modal-btn" onclick="window.location.href='/'">홈으로 이동</button>
-            </div>
-        </div>
-    {% else %}
+{% block title %}마이페이지{% endblock %}
+
+{% block content %}
     <div class="container">
         <h2>마이페이지</h2>
-        <div id="userInfoBox">
-            <table class="users-table" style="margin-bottom:32px;">
-                <tr><th>이름</th><td id="myName"></td></tr>
-                <tr><th>이메일</th><td id="myEmail"></td></tr>
-                <tr><th>가입일</th><td id="myCreated"></td></tr>
-            </table>
-        </div>
-        <form id="updateForm">
-            <h3>회원정보 수정</h3>
-            <label for="name">이름</label>
-            <input type="text" id="name" name="name" required>
-            <label for="email">이메일</label>
-            <input type="email" id="email" name="email" required>
-            <label for="password">새 비밀번호 (선택)</label>
-            <input type="password" id="password" name="password" placeholder="변경 시에만 입력">
-            <button type="submit">정보수정</button>
-        </form>
-        <div id="deletePw" style="display: none;">
+        {% if user %}
+            <div class="profile">
+                <p><strong>이름:</strong> {{ user.name }}</p>
+                <p><strong>이메일:</strong> {{ user.email }}</p>
+                <p><strong>가입일:</strong> {{ user.created_at }}</p>
+                <form id="deleteForm" method="post" action="/users/delete">
+                    <label for="password">비밀번호 확인</label>
+                    <input type="password" id="password" name="password" required>
+                    <button type="submit">회원 탈퇴</button>
+                </form>
+            </div>
+        {% else %}
+            <div class="alert">로그인이 필요합니다.</div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        document.getElementById('deleteForm')?.addEventListener('submit', function(e) {
+            if (!confirm('정말로 회원 탈퇴를 진행하시겠습니까?')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+{% endblock %}
             <label for="deletePassword">비밀번호 확인</label>
             <input type="password" id="deletePassword" name="deletePassword" placeholder="회원탈퇴시 비밀번호 입력" required>
         </div>

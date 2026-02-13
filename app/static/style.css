@@ -1,3 +1,24 @@
+/* # 게시글 작성/수정 폼 스타일 */
+.post-form textarea {
+    width: 100%;
+    min-height: 180px;
+    padding: 0.9rem 0.7rem;
+    border-radius: 4px;
+    border: 1.5px solid #bfc9d1;
+    margin-top: 0.3rem;
+    font-size: 1.08rem;
+    font-family: inherit;
+    resize: vertical;
+    background: #fafdff;
+    transition: border 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+.post-form textarea:focus {
+    outline: none;
+    border: 1.5px solid #007bff;
+    box-shadow: 0 0 0 2px #e3f0ff;
+    background: #fff;
+}
 /* # 회원목록 테이블 스타일 */
 .users-table {
     width: 100%;

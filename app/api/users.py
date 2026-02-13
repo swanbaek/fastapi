@@ -23,7 +23,7 @@ def get_users():
         conn.close()
 
 # 의존성 함수
-def get_current_user_id(request: Request) -> int:
+def get_current_user(request: Request) -> int:
     user_id = request.session.get("user_id")
     if not user_id:
         raise HTTPException(status_code=401, detail="로그인 필요")
@@ -33,7 +33,7 @@ def get_current_user_id(request: Request) -> int:
 #/users/me 요청이 들어오면 /users/{user_id} 경로가 먼저 매칭됨."me"를 user_id로 해석하려다 타입 에러 발생
 #더 구체적인 경로를 먼저 선언하자
 @router.get("/users/me", response_model=UserOut)
-def get_me(user_id: int = Depends(get_current_user_id)):
+def get_me(user_id: int = Depends(get_current_user)):
     """현재 로그인한 사용자 정보 반환"""
     
     if not user_id:
@@ -129,7 +129,7 @@ def create_user(user: UserCreate):
 @router.patch("/users/me", response_model=UserOut)
 def update_my_info(
     user: UserUpdate,
-    user_id: int = Depends(get_current_user_id)
+    user_id: int = Depends(get_current_user)
 ):
     """
     내 정보 수정
@@ -270,7 +270,7 @@ from fastapi import Body
 @router.delete("/users/me", status_code=status.HTTP_204_NO_CONTENT)
 def delete_my_account(
     password: str = Body(..., embed=True),
-    user_id: int = Depends(get_current_user_id)
+    user_id: int = Depends(get_current_user)
 ):
     """
     내 계정 삭제 (비밀번호 확인)
