@@ -1,7 +1,7 @@
 
 app/
  ├── api/          # 라우터(엔드포인트) 모음
- ├── core/         # 설정, 환경변수, 보안, CORS, init 관련
+ ├── core/         # 설정, 환경변수, 보안, CORS, init 관련, DB연결함수
  ├── crud/         # DB CRUD 함수 모음
  ├── models/       # SQLAlchemy 모델
  ├── schemas/      # Pydantic 스키마
