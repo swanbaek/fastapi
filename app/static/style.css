@@ -383,7 +383,7 @@ body {
     color: #ffb400;
 }
 .navbar .logo {
-    font-size: 24px;
+    font-size: 1em;
     font-weight: bold;
     margin-right: 36px;
     letter-spacing: 1px;
