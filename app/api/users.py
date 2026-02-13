@@ -4,39 +4,11 @@ from fastapi import APIRouter, HTTPException, status, Request, Response, Depends
 
 router = APIRouter()
 
- # 로그인 엔드포인트 (세션 기반)
-@router.post("/login")
-async def login(request: Request, response: Response):
-    data = await request.json()
-    email = data.get('email')
-    password = data.get('password')
-    if not email or not password:
-        raise HTTPException(status_code=400, detail="이메일과 비밀번호를 입력하세요.")
-    conn = get_connection()
-    try:
-        with conn.cursor() as cursor:
-            cursor.execute("SELECT id, name, email, password FROM users WHERE email=%s", (email,))
-            user = cursor.fetchone()
-            if not user:
-                raise HTTPException(status_code=401, detail="이메일 또는 비밀번호가 올바르지 않습니다.")
-            if not bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
-                raise HTTPException(status_code=401, detail="이메일 또는 비밀번호가 올바르지 않습니다.")
-            # 로그인 성공: 세션에 user_id 저장
-            request.session['user_id'] = user['id']
-            request.session['user_name'] = user['name']
-            return {"id": user['id'], "name": user['name'], "email": user['email']}
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="DB Error: " + str(e))
-    finally:
-        conn.close()
+...existing code...
 
- # 로그아웃 엔드포인트
-@router.post("/logout")
-def logout(request: Request):
-    request.session.clear()
-    return {"msg": "로그아웃 완료"}
+# 로그인/로그아웃 엔드포인트는 login.py에서 관리
+from app.api.login import router as login_router
+...existing code...
 
 from typing import List
 from datetime import datetime
@@ -76,6 +48,7 @@ def get_users():
 @router.get("/users/{user_id}", response_model=UserOut)
 def get_user(user_id: int):
     conn = get_connection()
+    
     try:
         with conn.cursor() as cursor:
             cursor.execute("SELECT id, name, email, created_at FROM users WHERE id=%s", (user_id,))
@@ -91,6 +64,7 @@ def get_user(user_id: int):
 @router.post("/users", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def create_user(user: UserCreate):
     conn = get_connection()
+    print('conn: ', conn)
     try:
         with conn.cursor() as cursor:
             # 이메일 중복 체크
@@ -99,7 +73,11 @@ def create_user(user: UserCreate):
                 raise HTTPException(status_code=400, detail="이미 등록된 이메일입니다.")
             # 비밀번호 해싱
             hashed_pw = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
-            now = datetime.utcnow()
+            # user.password.encode('utf-8')  # 문자열을 바이트로 변환 + bcrypt.gensalt()  # 솔트 생성
+            # b'$2b$12$OQTeMQ8IQ3wvKBkH05eIyun1OpG...' 이런식의 바이트형태 해시 생성
+            # DB에는 바이트 자체를 저장할 수 없으므로 decode()로 문자열로 변환하여 삽입해야 함
+            # 바이트(bytes)  →  decode('utf-8')  →  문자열(str)
+            now = datetime.now()
             sql = "INSERT INTO users (name, email, password, created_at) VALUES (%s, %s, %s, %s)"
             cursor.execute(sql, (user.name, user.email, hashed_pw.decode('utf-8'), now))
             conn.commit()
@@ -127,7 +105,7 @@ def update_user(user_id: int, user: UserUpdate):
             conn.commit()
             if cursor.rowcount == 0:
                 raise HTTPException(status_code=404, detail="User not found")
-        return {"id": user_id, "name": user.name, "email": user.email, "created_at": datetime.utcnow()}
+        return {"id": user_id, "name": user.name, "email": user.email, "created_at": datetime.now()}
     except HTTPException:
         raise
     except Exception as e:
