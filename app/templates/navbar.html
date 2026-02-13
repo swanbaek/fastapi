@@ -5,19 +5,19 @@
                 <span class="login-status">{{ request.session.get('user_name') }}님 로그인 중...</span>
             <a href="/users/list">회원목록</a>
             <a href="#" id="logoutLink">로그아웃</a>
-            <a href="/posts">게시판</a>
+            <a href="/posts/list">게시판</a>
             <a href="/mypage">MyPage</a>
         {% else %}
             <a href="/signup">회원가입</a>
             <a href="/users/list">회원목록</a>
             <a href="#" id="loginLink">로그인</a>
-            <a href="/posts">게시판</a>
+            <a href="/posts/list">게시판</a>
             <a href="/mypage">MyPage</a>
         {% endif %}
     </div>
     <div class="logo">EduApp</div>
 </nav>
-<script>
+<script> 
     document.addEventListener('DOMContentLoaded', function() {
         const logoutLink = document.getElementById('logoutLink');
         if (logoutLink) {

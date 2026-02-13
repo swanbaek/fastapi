@@ -4,10 +4,19 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+
 from app.api import posts
 from app.api import users
 from app.api.login import router as login_router
 from starlette.middleware.sessions import SessionMiddleware
+
+# SQLAlchemy 모델 import 및 테이블 생성
+from app.models.user import User
+from app.models.post import Post
+from app.core.database import engine
+from app.models.post import Base
+
+Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()

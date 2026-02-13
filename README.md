@@ -20,12 +20,13 @@
 
 ## 폴더 구조
 ```
+
 app/
  ├── api/          # 라우터(엔드포인트) 모음
  ├── core/         # 설정, 환경변수, 보안, CORS, init 관련, DB연결함수
  ├── crud/         # DB CRUD 함수 모음
- ├── models/       # SQLAlchemy 모델
- ├── schemas/      # Pydantic 스키마
+ ├── models/       # SQLAlchemy 모델 [DB 구조(테이블) 정의]
+ ├── schemas/      # Pydantic 스키마 [FastAPI용 Request/Response 데이터 검증/반환용]
  ├── services/     # 비즈니스 로직 (서비스 계층)
  ├── static/       # CSS, JS, 이미지 (정적 파일)
  ├── templates/    # Jinja2 HTML 템플릿

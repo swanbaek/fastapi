@@ -28,14 +28,16 @@ CREATE TABLE posts (
 - `Post` 클래스: posts 테이블과 매핑
 - 주요 필드: id, title, content, user_id, created_at, updated_at
 - 관계: User(작성자)와 ForeignKey, relationship 설정
-
+- 📌 Model = “DB 테이블을 어떻게 만들 것인가?”
+→ 테이블 설계도 + ORM 기능 포함
 ---
 
 ## 4. Pydantic 스키마 (app/schemas/post.py)
 - `PostCreate`: 게시글 생성용(title, content)
 - `PostUpdate`: 게시글 수정용(title, content, optional)
 - `PostOut`: 게시글 조회용(id, title, content, user_id, created_at, updated_at)
-
+- 📌 Schema = “API 요청/응답은 어떤 모양으로 받을 것인가?”
+→ DTO(Data Transfer Object) 역할
 ---
 
 ## 5. DB 세션 관리

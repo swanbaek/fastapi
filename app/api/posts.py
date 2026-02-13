@@ -6,15 +6,20 @@ from starlette.status import HTTP_302_FOUND
 from app.core.database import get_db
 from app.models import post as post_model
 from app.schemas import post as post_schema
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session,joinedload
 from typing import List
 from app.services.file_service import save_upload_file
 from app.api.users import get_current_user
 from datetime import datetime
 
-
 router = APIRouter(prefix="/posts", tags=["posts"])
 templates = Jinja2Templates(directory="app/templates")
+
+
+@router.get("/list")
+def post_list_page(request: Request, db: Session = Depends(get_db)):
+    posts = db.query(post_model.Post).order_by(post_model.Post.id.desc()).all()
+    return templates.TemplateResponse("posts.html", {"request": request, "posts": posts})
 
 @router.get("/", response_model=List[post_schema.PostOut])
 def list_posts(request: Request, db: Session = Depends(get_db)):
@@ -38,14 +43,15 @@ def create_post(request: Request,
 	file_url = None
 	if file:
 		file_url = save_upload_file(file)
+	print('#'*100)
+	print('current_user:', current_user)
 	post = post_model.Post(
 		title=title,
 		content=content,
-		author=current_user.name,
-		author_id=current_user.id,
+		user_id=current_user,  # author_id -> user_id
 		file_url=file_url,
 		created_at=datetime.now(),
-		views=0
+		hit_count=0
 	)
 	db.add(post)
 	db.commit()
@@ -57,7 +63,7 @@ def post_detail(request: Request, post_id: int, db: Session = Depends(get_db), c
 	post = db.query(post_model.Post).filter(post_model.Post.id == post_id).first()
 	if not post:
 		raise HTTPException(status_code=404, detail="게시글 없음")
-	post.views += 1
+	post.hit_count += 1
 	db.commit()
 	db.refresh(post)
 	return templates.TemplateResponse("post_detail.html", {"request": request, "post": post, "current_user": current_user})
@@ -77,7 +83,13 @@ def update_post(request: Request,
 				file: UploadFile = File(None),
 				db: Session = Depends(get_db),
 				current_user=Depends(get_current_user)):
-	post = db.query(post_model.Post).filter(post_model.Post.id == post_id).first()
+	#post = db.query(post_model.Post).filter(post_model.Post.id == post_id).first()
+	post = (
+        db.query(post_model.Post)
+        .options(joinedload(post_model.Post.user))  # Post 모델에 relationship이 정의되어 있다면
+        .filter(post_model.Post.id == post_id)
+        .first()
+    )
 	if not post or post.author_id != current_user.id:
 		raise HTTPException(status_code=403, detail="권한 없음")
 	post.title = title

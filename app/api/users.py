@@ -268,10 +268,8 @@ def update_user_by_id(user_id: int, user: UserUpdate):
 from fastapi import Body
 
 @router.delete("/users/me", status_code=status.HTTP_204_NO_CONTENT)
-def delete_my_account(
-    password: str = Body(..., embed=True),
-    user_id: int = Depends(get_current_user)
-):
+def delete_my_account(password: str = Body(..., embed=True),
+    user_id: int = Depends(get_current_user)):
     """
     내 계정 삭제 (비밀번호 확인)
     - 세션에서 user_id 추출
@@ -298,5 +296,6 @@ def delete_my_account(
     except Exception as e:
         conn.rollback()
         raise HTTPException(status_code=500, detail=f"DB Error: {str(e)}")
-    finally:
-        conn.close()
+
+
+

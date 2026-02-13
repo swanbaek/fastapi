@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}EduApp{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="main">
+        {% block content %}{% endblock %}
+    </div>
+    <footer>
+        &copy; 2026 EduApp. All rights reserved.
+    </footer>
+    {% include 'login_modal.html' %}
+    {% block script %}{% endblock %}
+</body>
+</html>
+ 

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}게시글 목록{% endblock %}
+
+{% block content %}
+<div class="container post-list">
+    <div class="post-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+        <h2 style="margin:0;">게시글 목록</h2>
+        {% if current_user %}
+        <a href="/posts/new" class="btn btn-primary btn-wide">글쓰기</a>
+        {% endif %}
+    </div>
+    <table class="post-table">
+        <thead>
+            <tr>
+                <th style="width:60px;">번호</th>
+                <th>제목</th>
+                <th style="width:120px;">작성자</th>
+                <th style="width:160px;">작성일</th>
+                <th style="width:80px;">조회수</th> 
+            </tr>
+        </thead>
+        <tbody>
+            {% for post in posts %}
+            <tr class="post-row" onclick="location.href='/posts/{{ post.id }}'">
+                <td>{{ post.id }}</td>
+                <td class="post-title">{{ post.title }}</td>
+                <td>{{ post.author or post.user.name or '알 수 없음' }}</td>
+                <td>{{ post.created_at.strftime('%Y-%m-%d %H:%M') if post.created_at else '' }}</td>
+                <td>{{ post.hit_count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination">
+        <!-- 페이지네이션 구현 필요시 -->
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<!-- 필요시 JS 추가 -->
+{% endblock %}

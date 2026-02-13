@@ -46,7 +46,8 @@
                 const response = await fetch('/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ email, password }),
+                    credentials: 'include'
                 });
                 if (response.ok) {
                     loginResultDiv.textContent = '로그인 성공!';

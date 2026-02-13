@@ -1,6 +1,6 @@
 
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship
 from datetime import datetime
 
 Base = declarative_base()
@@ -17,3 +17,5 @@ class Post(Base):
 	hit_count = Column(Integer, default=0)
 	file_url = Column(String(300), nullable=True)
 	file_name = Column(String(200), nullable=True)
+
+	user = relationship("User", backref="posts")
