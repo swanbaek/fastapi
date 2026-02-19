@@ -45,12 +45,28 @@ def create_new_post(db: Session, title: str, content: str, file, current_user_id
     return post_crud.create_post(db, post)
 
 # 게시글 수정
+
 def update_existing_post(db: Session, post: Post, title: str, content: str, file):
+    from datetime import datetime
     post.title = title
     post.content = content
+    post.updated_at = datetime.now()  # 수정시각 갱신
 
-    if file:
-        post.file_url = save_upload_file(file)  # 파일이 있으면 새로 저장
+    # 파일이 새로 업로드된 경우 기존 파일 삭제 후 새 파일 저장
+    if file and file.filename:
+        # 기존 파일 삭제
+        if post.file_url:
+            file_name = post.file_url.split('/static/uploads/')[-1]
+            file_path = os.path.join(UPLOAD_DIR, file_name)
+            if os.path.exists(file_path):
+                try:
+                    os.remove(file_path)
+                except Exception:
+                    pass
+        # 새 파일 저장
+        post.file_url = save_upload_file(file)
+        post.file_name = file.filename
+    # 파일을 새로 업로드하지 않으면 기존 file_url/file_name 유지
 
     return post_crud.update_post(db, post)
 

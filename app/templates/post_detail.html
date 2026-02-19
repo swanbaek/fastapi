@@ -13,6 +13,7 @@
     <div class="post-detail-header">
         <h2 class="post-title">{{ post.title }}</h2>
         <div class="post-meta">
+            <span class="post-author"><i class="fa fa-user"></i> 글번호: {{ post.id or '알 수 없음' }}</span>
             <span class="post-author"><i class="fa fa-user"></i> 작성자: {{ post.user.name or '알 수 없음' }}</span>
             <span class="post-date"><i class="fa fa-calendar"></i> 작성일: {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
             <span class="post-views"><i class="fa fa-eye"></i> 조회수: {{ post.hit_count }}</span>

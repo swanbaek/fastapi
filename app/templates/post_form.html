@@ -4,24 +4,35 @@
 
 {% block content %}
 <div class="container post-form">
-    <h2>게시글 작성</h2>
+    <h2>{% if post %}게시글 수정{% else %}게시글 작성{% endif %}</h2>
     {% if current_user %}
     <div class="author-info" style="margin-bottom:1em; text-align:right; color:#222e50; font-weight:500;">
         작성자: <span id="authorName">불러오는 중...</span>
     </div>
     {% endif %}
-    <form method="post" action="/posts/new" enctype="multipart/form-data" id="postForm">
+    <form method="post" action="{% if post %}/posts/{{ post.id }}/edit{% else %}/posts/new{% endif %}" enctype="multipart/form-data" id="postForm">
         <label for="title">제목</label>
-        <input type="text" id="title" name="title" placeholder="Title" required {% if not current_user %}disabled{% endif %}>
+        <input type="text" id="title" name="title" placeholder="Title" required {% if not current_user %}disabled{% endif %} value="{{ post.title if post else '' }}">
 
         <label for="content">글내용</label>
-        <textarea id="content" name="content" rows="8" placeholder="Content" required {% if not current_user %}disabled{% endif %}></textarea>
+        <textarea id="content" name="content" rows="8" placeholder="Content" required {% if not current_user %}disabled{% endif %}>{{ post.content if post else '' }}</textarea>
 
         <label for="file">첨부파일</label>
         <input type="file" id="file" name="file" {% if not current_user %}disabled{% endif %}>
 
+        {% if post and post.file_url %}
+            <div style="margin:10px 0;">
+                <strong>기존 첨부파일:</strong>
+                {% if post.file_url.endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp')) %}
+                    <div style="margin:8px 0;"><img src="{{ post.file_url }}" alt="첨부 이미지" style="max-width:220px; max-height:160px; border-radius:6px;"></div>
+                {% endif %}
+                <a href="{{ post.file_url }}" download="{{ post.file_name }}">{{ post.file_name }}</a>
+                <span style="color:#888; font-size:0.97em;">(새 파일 업로드 시 기존 파일이 교체됩니다)</span>
+            </div>
+        {% endif %}
+
         <button type="submit" class="btn btn-primary" {% if not current_user %}disabled{% endif %}>저장</button>
-        <a href="/posts" class="btn btn-light">취소</a>
+        <a href="/posts/list" class="btn btn-light">취소</a>
     </form>
     {% if not current_user %}
     <div class="alert" style="margin-top:1em; color:#c00; text-align:center; font-weight:bold;">로그인 후 글쓰기가 가능합니다.</div>
