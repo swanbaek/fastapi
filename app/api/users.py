@@ -41,6 +41,7 @@ def update_me(user: UserUpdate, user_id: int = Depends(get_current_user)):
 
 from fastapi import Header
 #CORS 설정 필요 main.py에서 
+# 기본값이 없는 인자는 항상 기본값이 있는 인자보다 앞에 와야 한다 request가 먼저 와야 함
 @router.delete("/users/me", status_code=204)
 def delete_me(
     request: Request,
@@ -54,21 +55,3 @@ def delete_me(
     response = Response(status_code=204)
     response.delete_cookie("session")
     return response
-
-# @router.delete("/users/me", status_code=204)
-# def delete_me(body: UserDelete,
-#         user_id: int = Depends(get_current_user),        
-#         request: Request = Depends()):
-#     print("body: ", body)
-#     password = body.password
-#     print("password received for account deletion:", password)
-#     # 1. 탈퇴 처리 - DB에서 사용자 정보 삭제
-#     service_delete_my_account(user_id, password)
-#     # 2. 세션에서 사용자 정보 제거 (로그아웃)
-#     request.session.clear()  # 세션 데이터 모두 삭제
-
-
-#     # 3. 쿠키도 함께 제거 (선택)
-#     response = JSONResponse(content=None, status_code=204)
-#     response.delete_cookie("session")  # 브라우저 쿠키 제거
-#     return response
