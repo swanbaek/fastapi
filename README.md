@@ -89,6 +89,14 @@ app/
 | POST   | /posts/{post_id}/edit     | 게시글 수정(폼 제출, 본인만)         |
 | POST   | /posts/{post_id}/delete   | 게시글 삭제(본인만)                  |
 
+### 화면 예시
+
+#### 게시글 목록
+![게시글 목록](app/static/1.png)
+
+#### 게시글 상세
+![게시글 상세](app/static/2.png)
+
 ## DB 연동 방식
 - `.env` 파일 또는 환경변수에서 DB 접속 정보(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DB) 로드
 - `app/core/db.py`의 `get_connection()` 함수로 PyMySQL 커넥션 생성
