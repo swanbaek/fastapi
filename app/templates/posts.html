@@ -26,13 +26,14 @@
             <tr class="post-row" onclick="location.href='/posts/{{ post.id }}'">
                 <td>{{ post.id }}</td>
                 <td class="post-title">
-                    {% if post.file_url and post.file_url.startswith('/static/uploads/') and ('.' in post.file_url) %}
-                        <span title="첨부파일 있음" style="vertical-align:middle; margin-left:6px; font-size:18px;">📎</span>
-                    {% else %}                        
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span class="post-title-text">
+                        {% if post.file_url and post.file_url.startswith('/static/uploads/') and ('.' in post.file_url) %}
+                            <span title="첨부파일 있음" style="vertical-align:middle; margin-left:6px; font-size:18px;">📎</span>
+                        {% else %}
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         {% endif %}
-                    {{ post.title }} 
-                        
+                        {{ post.title }}
+                    </span>
                 </td>
                 <td>{{ post.author or post.user.name or '알 수 없음' }}</td>
                 <td>{{ post.created_at.strftime('%y-%m-%d') if post.created_at else '' }}</td>

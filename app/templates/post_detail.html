@@ -2,7 +2,13 @@
 
 {% block title %}게시글 상세{% endblock %}
 
+
 {% block content %}
+{% if auth_message %}
+    <div class="container post-detail-card">
+        <h2 style="text-align:center; margin:60px 0 40px 0;">{{ auth_message }}</h2>
+    </div>
+{% elif post %}
 <div class="container post-detail-card">
     <div class="post-detail-header">
         <h2 class="post-title">{{ post.title }}</h2>
@@ -55,6 +61,7 @@
         {% endif %}
     </div>
 </div>
+{% endif %}
 {% endblock %}
 
 {% block script %}
@@ -71,7 +78,7 @@
             });
             if (response.ok) {
                 alert('게시글이 삭제되었습니다.');
-                window.location.href = '/posts';
+                window.location.href = '/posts/list';
             } else {
                 alert('삭제에 실패했습니다.');
             }

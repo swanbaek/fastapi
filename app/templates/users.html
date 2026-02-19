@@ -3,31 +3,22 @@
 {% block title %}회원목록{% endblock %}
 
 {% block content %}
-    {% if auth_message %}
-        <div id="authModal" class="modal auth-modal">
-            <div class="auth-modal-content">
-                <h3 class="auth-modal-title">{{ auth_message }}</h3>
-                <button class="auth-modal-btn" onclick="window.location.href='/'">홈으로 이동</button>
-            </div>
-        </div>
-    {% else %}
-        <div class="container">
-            <h2>회원목록</h2>
-            <table id="usersTable" class="users-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>이름</th>
-                        <th>이메일</th>
-                        <th>가입일</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- 회원 데이터가 JS로 채워집니다 -->
-                </tbody>
-            </table>
-        </div>
-    {% endif %}
+    <div class="container">
+        <h2>회원목록</h2>
+        <table id="usersTable" class="users-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>이름</th>
+                    <th>이메일</th>
+                    <th>가입일</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 회원 데이터가 JS로 채워집니다 -->
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
 
 {% block script %}

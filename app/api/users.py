@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Body, Form, Request, Response
 from typing import List
 
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 from app.schemas.user import UserCreate, UserUpdate, UserOut, UserDelete
 from app.deps import get_current_user
 from app.services.user_service import (
@@ -14,9 +14,15 @@ from app.services.user_service import (
 
 router = APIRouter()
 
-@router.get("/users", response_model=List[UserOut])
-def get_users():
-    return service_get_all_users()
+from fastapi.templating import Jinja2Templates
+templates = Jinja2Templates(directory="app/templates")
+
+@router.get("/users", response_class=HTMLResponse)
+def get_users(request: Request, current_user: int = Depends(get_current_user)):
+    # 로그인 안 했으면 auth_message 전달
+    if not current_user:
+        return templates.TemplateResponse("users.html", {"request": request, "auth_message": "로그인이 필요합니다."})
+    return templates.TemplateResponse("users.html", {"request": request})
 
 
 @router.get("/users/me", response_model=UserOut)

@@ -12,6 +12,18 @@
     <div class="main">
         {% block content %}{% endblock %}
     </div>
+    {# 로그인 필요시 모달 #}
+    {% if auth_message %}
+    <div id="authModal" class="modal auth-modal" style="display:flex; position:fixed; z-index:2000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); justify-content:center; align-items:center;">
+        <div class="auth-modal-content" style="background:#fff; padding:32px 24px; border-radius:10px; box-shadow:0 2px 16px rgba(34,46,80,0.15); min-width:320px; max-width:90vw; position:relative; text-align:center;">
+            <h3 class="auth-modal-title">{{ auth_message }}</h3>
+            <button class="auth-modal-btn" onclick="window.location.href='/'" style="margin-top:18px; padding:8px 24px; border-radius:5px; background:#007bff; color:#fff; border:none; font-size:1rem;">홈으로 이동</button>
+        </div>
+    </div>
+    <script>
+    document.body.style.overflow = 'hidden';
+    </script>
+    {% endif %}
     <footer>
         &copy; 2026 EduApp. All rights reserved.
     </footer>

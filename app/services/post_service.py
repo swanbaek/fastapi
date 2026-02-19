@@ -1,4 +1,10 @@
 
+# 게시글 삭제 (첨부파일까지 삭제)
+import os
+from sqlalchemy.orm import Session
+
+UPLOAD_DIR = os.path.join(os.path.dirname(__file__), '..', 'static', 'uploads')
+
 # 게시글 서비스 계층: 비즈니스 로직 담당
 from datetime import datetime
 from fastapi import HTTPException
@@ -50,5 +56,24 @@ def update_existing_post(db: Session, post: Post, title: str, content: str, file
 
 # 게시글 소유자 검증 (권한 체크)
 def validate_post_owner(post, current_user_id):
-    if not post or post.author_id != current_user_id:
+    if not post or post.user_id != current_user_id:
         raise HTTPException(status_code=403, detail="권한 없음")
+
+def delete_post_with_file(db: Session, post: Post):
+    """
+    게시글 삭제 시 첨부파일이 있으면 uploads 폴더에서 파일도 함께 삭제
+    """
+    # 첨부파일 경로가 있으면 파일 삭제 시도
+    if post.file_url:
+        # file_url 예: /static/uploads/20260219123456_filename.jpg
+        file_name = post.file_url.split('/static/uploads/')[-1]
+        file_path = os.path.join(UPLOAD_DIR, file_name)
+        if os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+            except Exception as e:
+                # 파일 삭제 실패 시 무시하고 게시글만 삭제
+                pass
+    # DB에서 게시글 삭제
+    post_crud.delete_post(db, post)
+

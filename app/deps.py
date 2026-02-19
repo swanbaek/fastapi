@@ -34,3 +34,7 @@ def get_current_user(request: Request) -> int:
     if not user_id:
         raise HTTPException(status_code=401, detail="로그인이 필요합니다.")
     return user_id
+
+def get_current_user_optional(request: Request):
+    """로그인 안 했으면 None 반환"""
+    return request.session.get("user_id")
