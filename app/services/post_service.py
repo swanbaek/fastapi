@@ -45,9 +45,8 @@ def create_new_post(db: Session, title: str, content: str, file, current_user_id
     return post_crud.create_post(db, post)
 
 # 게시글 수정
-
+from datetime import datetime
 def update_existing_post(db: Session, post: Post, title: str, content: str, file):
-    from datetime import datetime
     post.title = title
     post.content = content
     post.updated_at = datetime.now()  # 수정시각 갱신
