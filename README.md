@@ -92,10 +92,10 @@ app/
 ### 화면 예시
 
 #### 게시글 목록
-![게시글 목록](./app/static/1.png)
+![게시글 목록](./1.png)
 
 #### 게시글 상세
-![게시글 상세](./app/static/2.png)
+![게시글 상세](./2.png)
 
 ## DB 연동 방식
 - `.env` 파일 또는 환경변수에서 DB 접속 정보(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DB) 로드
