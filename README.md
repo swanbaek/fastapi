@@ -49,6 +49,19 @@ main.py          # FastAPI 앱 진입점
 requirements.txt # 의존성 목록
 ```
 
+#### User 관련 API 엔드포인트
+| 메서드 | 경로                | 설명                        |
+|--------|---------------------|-----------------------------|
+| GET    | /users/list         | 회원목록 페이지(HTML, 로그인 필요) |
+| GET    | /users              | 회원목록(JSON, 로그인 필요, JS fetch용) |
+| GET    | /users/me           | 내 정보 조회 (로그인 필요)   |
+| GET    | /users/{user_id}    | 특정 회원 정보 조회         |
+| POST   | /users              | 회원가입 (JSON)             |
+| POST   | /users2             | 회원가입 (Form)             |
+| PUT    | /users/me           | 내 정보 수정 (로그인 필요)   |
+| PATCH  | /users/me           | 내 정보 일부 수정 (로그인 필요) |
+| DELETE | /users/me           | 회원 탈퇴 (로그인 필요)      |
+
 ### Posts 관련 폴더 구조
 ```
 app/
@@ -62,8 +75,19 @@ app/
  │    └── post.py
  ├── schemas/
  │    └── post.py
-
 ```
+
+#### Posts 관련 API 엔드포인트
+| 메서드 | 경로                      | 설명                                 |
+|--------|---------------------------|--------------------------------------|
+| GET    | /posts/list               | 게시글 목록 페이지(HTML)             |
+| GET    | /posts                    | 게시글 목록(JSON)                    |
+| GET    | /posts/new                | 게시글 작성 폼(HTML, 로그인 필요)    |
+| POST   | /posts/new                | 게시글 작성(폼 제출, 로그인 필요)    |
+| GET    | /posts/{post_id}          | 게시글 상세(HTML, 로그인 필요시 모달) |
+| GET    | /posts/{post_id}/edit     | 게시글 수정 폼(HTML, 본인만)         |
+| POST   | /posts/{post_id}/edit     | 게시글 수정(폼 제출, 본인만)         |
+| POST   | /posts/{post_id}/delete   | 게시글 삭제(본인만)                  |
 
 ## DB 연동 방식
 - `.env` 파일 또는 환경변수에서 DB 접속 정보(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DB) 로드
