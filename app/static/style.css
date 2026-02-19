@@ -1,6 +1,6 @@
 /* 게시글 목록 테이블 스타일 */
 .post-list {
-    max-width: 900px;
+    max-width: 1200px;
     margin: 60px auto 40px auto;
     background: #fff;
     border-radius: 12px;
@@ -12,12 +12,19 @@
 }
 .post-table {
     width: 100%;
+    max-width: 100%;
     border-collapse: collapse;
     background: #fff;
     font-size: 15.5px;
     box-shadow: 0 2px 8px rgba(34,46,80,0.06);
     margin-bottom: 18px;
+    table-layout: fixed; /* 추가 */
 }
+.post-table th:nth-child(1) { width: 7%; }
+.post-table th:nth-child(2) { width: 48%; }
+.post-table th:nth-child(3) { width: 15%; }
+.post-table th:nth-child(4) { width: 15%; }
+.post-table th:nth-child(5) { width: 10%; }
 .post-table th, .post-table td {
     padding: 10px 8px;
     border-bottom: 1px solid #e3eafc;
@@ -41,6 +48,10 @@
     font-weight: 500;
     padding-left: 12px;
     font-size: 1rem;
+    max-width: 40%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .post-actions {
     display: flex !important;

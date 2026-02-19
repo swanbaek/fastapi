@@ -4,29 +4,38 @@
 
 {% block content %}
 <div class="container post-list">
-    <div class="post-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
-        <h2 style="margin:0;">게시글 목록</h2>
+    <div class="post-header" style="display:flex; justify-content:flex-end; align-items:center;gap:8px; margin-bottom:18px;">       
+        <a href="/posts/list" class="btn btn-danger btn-wide">글목록</a>
         {% if current_user %}
         <a href="/posts/new" class="btn btn-primary btn-wide">글쓰기</a>
         {% endif %}
+        
     </div>
     <table class="post-table">
         <thead>
             <tr>
-                <th style="width:60px;">번호</th>
+                <th>번호</th>
                 <th>제목</th>
-                <th style="width:120px;">작성자</th>
-                <th style="width:160px;">작성일</th>
-                <th style="width:80px;">조회수</th> 
+                <th>작성자</th>
+                <th>작성일</th>
+                <th>조회수</th>
             </tr>
         </thead>
         <tbody>
             {% for post in posts %}
             <tr class="post-row" onclick="location.href='/posts/{{ post.id }}'">
                 <td>{{ post.id }}</td>
-                <td class="post-title">{{ post.title }}</td>
+                <td class="post-title">
+                    {% if post.file_url and post.file_url.startswith('/static/uploads/') and ('.' in post.file_url) %}
+                        <span title="첨부파일 있음" style="vertical-align:middle; margin-left:6px; font-size:18px;">📎</span>
+                    {% else %}                        
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        {% endif %}
+                    {{ post.title }} 
+                        
+                </td>
                 <td>{{ post.author or post.user.name or '알 수 없음' }}</td>
-                <td>{{ post.created_at.strftime('%Y-%m-%d %H:%M') if post.created_at else '' }}</td>
+                <td>{{ post.created_at.strftime('%y-%m-%d') if post.created_at else '' }}</td>
                 <td>{{ post.hit_count }}</td>
             </tr>
             {% endfor %}

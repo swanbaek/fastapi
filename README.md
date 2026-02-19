@@ -49,6 +49,22 @@ main.py          # FastAPI 앱 진입점
 requirements.txt # 의존성 목록
 ```
 
+### Posts 관련 폴더 구조
+```
+app/
+ ├── api/
+ │    └── posts.py            ← 라우터만 (요청/응답만 담당)
+ ├── services/
+ │    └── post_service.py     ← 비즈니스 로직
+ ├── crud/
+ │    └── post_crud.py        ← DB 접근만 담당
+ ├── models/
+ │    └── post.py
+ ├── schemas/
+ │    └── post.py
+
+```
+
 ## DB 연동 방식
 - `.env` 파일 또는 환경변수에서 DB 접속 정보(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DB) 로드
 - `app/core/db.py`의 `get_connection()` 함수로 PyMySQL 커넥션 생성

@@ -20,16 +20,20 @@
         </div>
         {% endif %}
         <p class="post-content">{{ post.content | safe }}</p>
-        {% if post.file_url %}
+        {% if post.file_url and post.file_name %}
         <div class="post-file">
-            <a href="{{ post.file_url }}" class="btn btn-secondary btn-wide">Attach File⬇️</a>
+            <a href="{{ post.file_url }}" download="{{ post.file_name}}" class="btn btn-secondary btn-wide">Attach File⬇️</a>
         </div>
         {% endif %}
     </div>
     <div class="post-actions">
-    {% if current_user and current_user.id == post.author_id %}
+    {# 로그인한 사용자와 글쓴이가 같을 때만 수정/삭제 버튼 노출 
+        {{current_user}} /// {{post.user_id}}
+    #}
+    
+    {% if current_user and current_user == post.user_id %}
     <a href="/posts/{{ post.id }}/edit" class="btn btn-warning btn-wide">수정</a>
-    <a href="javascript:void(0)" onclick="deletePost({{ post.id }})" class="btn btn-danger btn-wide">삭제</>
+    <a href="javascript:void(0)" onclick="deletePost({{ post.id }})" class="btn btn-danger btn-wide">삭제</a>
     {% endif %}
     <a href="/posts/list" class="btn btn-light btn-wide">목록으로</a>
     </div>
@@ -56,16 +60,15 @@
 {% block script %}
 <!-- 필요시 JS 추가 -->
  <script>
+    // 게시글 삭제: 본인 글만 삭제 가능 (서버에서 한 번 더 권한 검증)
     async function deletePost(postId) {
         if (!confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
             return;
         }
-        
         try {
             const response = await fetch(`/posts/${postId}/delete`, {
                 method: 'POST'
             });
-            
             if (response.ok) {
                 alert('게시글이 삭제되었습니다.');
                 window.location.href = '/posts';
