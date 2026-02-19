@@ -38,3 +38,29 @@ def get_current_user(request: Request) -> int:
 def get_current_user_optional(request: Request):
     """로그인 안 했으면 None 반환"""
     return request.session.get("user_id")
+
+#Node.js의 verifyAccessToken 미들웨어 대응.
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBearer
+from jose import jwt, JWTError
+from app.core.config import settings
+
+bearer = HTTPBearer()
+
+def get_current_user_jwt(token: str = Depends(bearer)):
+    try:
+        decoded = jwt.decode(
+            token.credentials,
+            settings.ACCESS_SECRET,
+            algorithms=["HS256"]
+        )
+        return decoded
+    except JWTError:
+        raise HTTPException(status_code=403, detail="유효하지 않은 토큰입니다.")
+
+
+#관리자 권한 체크
+def admin_only(user = Depends(get_current_user)):
+    if user["role"] != "ADMIN":
+        raise HTTPException(status_code=403, detail="관리자 권한 필요")
+    return user

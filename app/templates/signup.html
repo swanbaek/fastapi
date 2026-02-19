@@ -45,20 +45,22 @@ document.getElementById('signupBtn').addEventListener('click', async function(e)
     const resultDiv = document.getElementById('result');
     resultDiv.textContent = '처리 중...';
     try {
-        const response = await fetch('/users', {
+        const response = await fetch('/api/users', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, password: pw })
         });
+        const data = await response.json();
         if (response.ok) {
-            const data = await response.json();
-            resultDiv.textContent = '회원가입 성공! ID: ' + data.id;
+            resultDiv.textContent = '회원가입 성공!';
+            setTimeout(() => { window.location.href = '/login'; }, 1500);
         } else {
-            const err = await response.json();
-            resultDiv.textContent = '오류: ' + (err.detail || '회원가입 실패');
+            resultDiv.textContent = '오류: ' + (data.detail || data.msg || '회원가입 실패');
+            resultDiv.style.color = 'red';
         }
     } catch (error) {
         resultDiv.textContent = '네트워크 오류';
+        resultDiv.style.color = 'red';
     }
 });
 </script>

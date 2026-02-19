@@ -1,7 +1,7 @@
 # DB 연결 관리 (MySQL)
 import os
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -12,6 +12,9 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # FastAPI 의존성 주입용 DB 세션 generator
 from sqlalchemy.orm import Session
 from typing import Generator
+
+# SQLAlchemy Base for models
+Base = declarative_base()
 
 def get_db() -> Generator[Session, None, None]:
 	db = SessionLocal()
