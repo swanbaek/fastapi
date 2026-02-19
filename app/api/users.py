@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Body, Request, Response
+from fastapi import APIRouter, Depends, Body, Form, Request, Response
 from typing import List
 
 from fastapi.responses import JSONResponse
@@ -28,11 +28,21 @@ def get_me(user_id: int = Depends(get_current_user)):
 def get_user(user_id: int):
     return service_get_user(user_id)
 
-
+# JSON Body로 받는 경우- 비동기방식
 @router.post("/users", response_model=UserOut)
 def create_user(user: UserCreate):
+    print("create_user()=> user:", user)
     return service_create_user(user)
 
+# Form 데이터로 동기식으로 받는 경우
+@router.post("/users2", response_model=UserOut)
+def create_user2(
+    name: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...)
+):
+    user = UserCreate(name=name, email=email, password=password)
+    return service_create_user(user)
 
 @router.put("/users/me", response_model=UserOut)
 @router.patch("/users/me", response_model=UserOut)

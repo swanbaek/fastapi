@@ -16,7 +16,7 @@
         {% if message %}
             <div class="alert">{{ message }}</div>
         {% endif %}
-        <form id="signupForm" method="post" action="/signup">
+        <form id="signupForm">
             <label for="name">이름</label>
             <input type="text" id="name" name="name" required>
             <label for="email">이메일</label>
@@ -25,22 +25,43 @@
             <input type="password" id="password" name="password" required>
             <label for="password_confirm">비밀번호 확인</label>
             <input type="password" id="password_confirm" name="password_confirm" required>
-            <button type="submit">가입하기</button>
+            <button type="button" id="signupBtn">가입하기</button>
         </form>
+        <div class="result" id="result"></div>
     </div>
 {% endblock %}
 
 {% block script %}
-    <script>
-        document.getElementById('signupForm').addEventListener('submit', function(e) {
-            const pw = document.getElementById('password').value;
-            const pwc = document.getElementById('password_confirm').value;
-            if (pw !== pwc) {
-                e.preventDefault();
-                alert('비밀번호가 일치하지 않습니다.');
-            }
+<script>
+document.getElementById('signupBtn').addEventListener('click', async function(e) {
+    const pw = document.getElementById('password').value;
+    const pwc = document.getElementById('password_confirm').value;
+    if (pw !== pwc) {
+        alert('비밀번호가 일치하지 않습니다.');
+        return;
+    }
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const resultDiv = document.getElementById('result');
+    resultDiv.textContent = '처리 중...';
+    try {
+        const response = await fetch('/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password: pw })
         });
-    </script>
+        if (response.ok) {
+            const data = await response.json();
+            resultDiv.textContent = '회원가입 성공! ID: ' + data.id;
+        } else {
+            const err = await response.json();
+            resultDiv.textContent = '오류: ' + (err.detail || '회원가입 실패');
+        }
+    } catch (error) {
+        resultDiv.textContent = '네트워크 오류';
+    }
+});
+</script>
 {% endblock %}
                     setTimeout(() => {
                         window.location.href = '/';
