@@ -1,6 +1,7 @@
 # 의존성 주입 관련 함수 정의
 from app.core.database import SessionLocal
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session	
+from fastapi import Request, HTTPException
 
 def get_db():
 	'''	DB 세션을 안전하게 생성·관리하기 위한 의존성(Dependency) 함수
@@ -22,3 +23,14 @@ def get_db():
 #                   ├─ yield db  ───────────────► (라우터로 db 전달)
 # 라우터 실행 끝 ◄─────── (다시 돌아옴)
 #                   └─ finally: db.close()        (세션 닫기)
+
+
+def get_current_user(request: Request) -> int:
+    """세션에서 로그인 중인 사용자 ID 가져오기"""
+
+    print(">> get_current_user 세션 내용:", request.session)
+
+    user_id = request.session.get("user_id")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="로그인이 필요합니다.")
+    return user_id

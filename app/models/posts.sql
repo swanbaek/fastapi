@@ -10,7 +10,7 @@ CREATE TABLE if not exists posts (
     hit_count int default 0, 
     file_url VARCHAR(300) DEFAULT NULL,
     file_name VARCHAR(200) DEFAULT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) on delete cascade
 );
 -- 게시글 테이블에 파일 관련 컬럼 추가
 -- file_url: 실제 파일 접근 경로(/static/uploads/...)

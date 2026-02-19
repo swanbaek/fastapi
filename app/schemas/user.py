@@ -27,3 +27,6 @@ class UserOut(UserBase):
         # dict가 아니라 클래스 객체를 넣어도 자동으로 모델로 변환해주는 기능
         # Pydantic은 기본적으로 “딕셔너리만 이해”하기 때문에,
         # 클래스 객체는 처리 못 함.
+
+class UserDelete(BaseModel):
+    password: str
