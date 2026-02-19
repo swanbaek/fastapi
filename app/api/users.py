@@ -17,12 +17,21 @@ router = APIRouter()
 from fastapi.templating import Jinja2Templates
 templates = Jinja2Templates(directory="app/templates")
 
-@router.get("/users", response_class=HTMLResponse)
-def get_users(request: Request, current_user: int = Depends(get_current_user)):
-    # 로그인 안 했으면 auth_message 전달
+
+# 회원목록 HTML 페이지 (로그인 필요)
+@router.get("/users/list", response_class=HTMLResponse)
+def users_list_page(request: Request, current_user: int = Depends(get_current_user)):
     if not current_user:
         return templates.TemplateResponse("users.html", {"request": request, "auth_message": "로그인이 필요합니다."})
     return templates.TemplateResponse("users.html", {"request": request})
+
+# 회원목록 JSON API (JS fetch용, 로그인 필요)
+@router.get("/users", response_model=List[UserOut])
+def get_users(current_user: int = Depends(get_current_user)):
+    if not current_user:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=401, detail="로그인이 필요합니다.")
+    return service_get_all_users()
 
 
 @router.get("/users/me", response_model=UserOut)
