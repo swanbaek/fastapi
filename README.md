@@ -53,18 +53,18 @@ requirements.txt # 의존성 목록
 #### User 관련 API 엔드포인트 (JWT 기반)
 | 메서드 | 경로                | 설명                        |
 |--------|---------------------|-----------------------------|
-| GET    | /users/list         | 회원목록 페이지(HTML, JWT 필요시 JS로 제어) |
-| GET    | /users              | 회원목록(JSON, JWT 필요, JS fetch Authorization 헤더) |
-| GET    | /users/me           | 내 정보 조회 (JWT 필요)   |
-| GET    | /users/{user_id}    | 특정 회원 정보 조회         |
-| POST   | /users              | 회원가입 (JSON)             |
-| POST   | /users2             | 회원가입 (Form)             |
-| POST   | /auth/login         | 로그인(JWT 토큰 발급, JSON) |
-| POST   | /auth/logout        | 로그아웃(토큰 삭제, 클라이언트 처리) |
-| POST   | /auth/refresh       | 토큰 재발급(리프레시)       |
-| PUT    | /users/me           | 내 정보 수정 (JWT 필요)   |
-| PATCH  | /users/me           | 내 정보 일부 수정 (JWT 필요) |
-| DELETE | /users/me           | 회원 탈퇴 (JWT 필요)      |
+| GET    | /api/users/list         | 회원목록 페이지(HTML, JWT 필요시 JS로 제어) |
+| GET    | /api/users              | 회원목록(JSON, JWT 필요, JS fetch Authorization 헤더) |
+| GET    | /api/users/me           | 내 정보 조회 (JWT 필요)   |
+| GET    | /api/users/{user_id}    | 특정 회원 정보 조회         |
+| POST   | /api/users              | 회원가입 (JSON)             |
+| POST   | /signup                 | 회원가입 (Form)             |
+| POST   | /auth/login             | 로그인(JWT 토큰 발급, JSON) |
+| POST   | /auth/logout            | 로그아웃(토큰 삭제, 클라이언트 처리) |
+| POST   | /auth/refresh           | 토큰 재발급(리프레시)       |
+| PUT    | /api/users/me           | 내 정보 수정 (JWT 필요)   |
+| PATCH  | /api/users/me           | 내 정보 일부 수정 (JWT 필요) |
+| DELETE | /api/users/me           | 회원 탈퇴 (JWT 필요)      |
 
 ### Posts 관련 폴더 구조
 ```
