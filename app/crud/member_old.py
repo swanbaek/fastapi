@@ -1,44 +1,44 @@
 from app.core.db import get_connection
 
-def get_all_users():
+def get_all_members():
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
-            cursor.execute("SELECT id, name, email, created_at FROM users")
+            cursor.execute("SELECT id, name, email, created_at FROM members")
             return cursor.fetchall()
     finally:
         conn.close()
 
 
-def get_user_by_id(user_id: int):
+def get_member_by_id(member_id: int):
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
             cursor.execute(
-                "SELECT id, name, email, created_at, password FROM users WHERE id=%s",
-                (user_id,)
+                "SELECT id, name, email, created_at, password FROM members WHERE id=%s",
+                (member_id,)
             )
             return cursor.fetchone()
     finally:
         conn.close()
 
 
-def get_user_by_email(email: str):
+def get_member_by_email(email: str):
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
-            cursor.execute("SELECT id FROM users WHERE email=%s", (email,))
+            cursor.execute("SELECT id FROM members WHERE email=%s", (email,))
             return cursor.fetchone()
     finally:
         conn.close()
 
 
-def create_user(name, email, hashed_pw, created_at):
+def create_member(name, email, hashed_pw, created_at):
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
             sql = """
-                INSERT INTO users (name, email, password, created_at)
+                INSERT INTO members (name, email, password, created_at)
                 VALUES (%s, %s, %s, %s)
             """
             cursor.execute(sql, (name, email, hashed_pw, created_at))
@@ -48,7 +48,7 @@ def create_user(name, email, hashed_pw, created_at):
         conn.close()
 
 
-def update_user(user_id: int, name: str, email: str, password: str | None):
+def update_member(member_id: int, name: str, email: str, password: str | None):
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
@@ -59,20 +59,20 @@ def update_user(user_id: int, name: str, email: str, password: str | None):
                 fields.append("password=%s")
                 values.append(password)
 
-            values.append(user_id)
+            values.append(member_id)
 
-            sql = f"UPDATE users SET {', '.join(fields)} WHERE id=%s"
+            sql = f"UPDATE members SET {', '.join(fields)} WHERE id=%s"
             cursor.execute(sql, values)
             conn.commit()
     finally:
         conn.close()
 
 
-def delete_user(user_id: int):
+def delete_member(member_id: int):
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
-            cursor.execute("DELETE FROM users WHERE id=%s", (user_id,))
+            cursor.execute("DELETE FROM members WHERE id=%s", (member_id,))
             conn.commit()
     finally:
         conn.close()

@@ -19,9 +19,12 @@ class Post(Base):
 	file_url = Column(String(300), nullable=True)
 	file_name = Column(String(200), nullable=True)
 
-	author = relationship("Member", backref="posts", foreign_keys=[user_id])
+	#author = relationship("Member", backref="posts", foreign_keys=[user_id], passive_deletes=True)
+	author = relationship("Member", back_populates="posts", foreign_keys=[user_id], passive_deletes=True)
 
 	#author는 실제 DB 컬럼이 아니라, SQLAlchemy ORM에서 관계(relationship)를 편하게 다루기 위해 사용하는 "파이썬 속성명"
 	#Post 모델에서 author = relationship("Member", ...)는 user_id를 통해 연결된 Member 객체를 파이썬에서 author라는 이름으로 접근할 수 있게 해줍니다.
 	#즉, post.author는 post.user_id에 해당하는 Member 객체를 의미합니다.
 	#반대로, Member.posts는 해당 회원이 작성한 모든 Post 목록을 의미합니다.
+	#passive_deletes=False(기본값): SQLAlchemy가 부모 삭제 시 자식의 외래키를 null로 만들거나 직접 삭제 쿼리를 실행함
+	# passive_deletes=True: SQLAlchemy는 아무 쿼리도 실행하지 않고, DB가 ON DELETE CASCADE 등으로 알아서 삭제 처리

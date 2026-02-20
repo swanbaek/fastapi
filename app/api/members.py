@@ -4,45 +4,49 @@ from sqlalchemy.exc import IntegrityError
 import bcrypt
 from app.deps import get_db, get_current_user_jwt
 from app.models.member import Member
+from app.services import member_service
 
-#pip install bcrypt passlib 두 라이브러리 버전을 맞추려면 bcrypt==4.0.1, passlib[bcrypt] 설치 필요
-#pip install "bcrypt==4.0.1"
-# RESTful: /api/users (회원가입 등)
-router = APIRouter(prefix="/api", tags=["members"])
+router = APIRouter()
 
-
-# GET /api/members (회원 목록)
-@router.get("/members")
+# 회원 목록 (GET /users)
+@router.get("/users")
 def list_members(user=Depends(get_current_user_jwt), db: Session = Depends(get_db)):
-    members = db.query(Member).all()
-    return [
-        {"id": m.id, "name": m.name, "email": m.email, "created_at": m.created_at}
-        for m in members
-    ]
+	return member_service.service_get_all_members(db)
 
-# 회원가입 (POST /api/users)
-
+# 회원가입 (POST /users)
 @router.post("/users")
 def create_user(
-    name: str = Body(...),
-    email: str = Body(...),
-    password: str = Body(...),
+	name: str = Body(...),
+	email: str = Body(...),
+	password: str = Body(...),
+	db: Session = Depends(get_db)
+):
+	return member_service.service_create_member(db, name, email, password)
+
+# 내 정보 조회 (GET /users/me)
+@router.get("/users/me")
+def get_my_info(user_id=Depends(get_current_user_jwt), db: Session = Depends(get_db)):
+	return member_service.service_get_member(db, user_id)
+
+# 내 정보 수정 (PUT /users/me)
+@router.put("/users/me")
+def update_my_info(
+	user_id=Depends(get_current_user_jwt),
+	name: str = Body(None),
+	email: str = Body(None),
+	password: str = Body(None),
+	db: Session = Depends(get_db)
+):
+	return member_service.service_update_my_info(db, user_id, name, email, password)
+
+# 회원 탈퇴 (DELETE /users/me)
+from fastapi import Header
+
+@router.delete("/users/me", status_code=204)
+def delete_my_account(
+    user_id=Depends(get_current_user_jwt),
+    x_password: str = Header(..., alias="X-Password"),
     db: Session = Depends(get_db)
 ):
-    if db.query(Member).filter(Member.email == email).first():
-        raise HTTPException(status_code=400, detail="이미 등록된 이메일입니다.")
-    print("******create_user()=> name:", name, "email:", email, "password:", password)
-    print(f"[DEBUG] password type: {type(password)}, repr: {repr(password)}")
-    if len(password.encode("utf-8")) > 72:
-        raise HTTPException(status_code=400, detail="비밀번호는 72바이트(약 72자) 이하로 입력하세요.")
-    hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-    new_member = Member(name=name, email=email, password=hashed_pw)
-    db.add(new_member)
-    try:
-        db.commit()
-        db.refresh(new_member)
-    except IntegrityError:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="회원가입 실패: 중복된 정보가 있습니다.")
-
-    return {"result": "success", "message": "회원가입이 완료되었습니다."}
+    member_service.service_delete_my_account(db, user_id, x_password)
+    return None

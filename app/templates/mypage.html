@@ -10,6 +10,7 @@
         <p><strong>이름:</strong> <span id="myName"></span></p>
         <p><strong>이메일:</strong> <span id="myEmail"></span></p>
         <p><strong>가입일:</strong> <span id="myCreated"></span></p>
+        <p><strong>ROLE:</strong> <span id="myRole"></span></p>
     </div>
 
     <form id="updateForm">
@@ -42,35 +43,40 @@
 {% endblock %}
 
 {% block script %}
+<script src="/static/common.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
-
     // 1. 회원정보 로드
-    const res = await fetch("/users/me");
+    const res = await apiFetch("/users/me");
+    
     if (res.ok) {
+        
         const user = await res.json();
+        // alert(JSON.stringify(user));
         document.getElementById("myId").textContent = user.id;
         document.getElementById("myName").textContent = user.name;
         document.getElementById("myEmail").textContent = user.email;
         document.getElementById("myCreated").textContent = user.created_at.replace("T"," ").slice(0,19);
-
         document.getElementById("name").value = user.name;
         document.getElementById("email").value = user.email;
+        document.getElementById("myRole").textContent = user.role || "N/A";
+    } else {
+        document.getElementById("userInfoBox").innerHTML = '<div style="color:red;">로그인 후 이용 가능합니다.</div>';
+        document.getElementById("updateForm").style.display = "none";
+        document.getElementById("deletePw").style.display = "none";
+        document.getElementById("deleteBtn").style.display = "none";
+        return;
     }
-
     // 2. 회원정보 수정
     document.getElementById("updateForm").addEventListener("submit", async (e) => {
         e.preventDefault();
-
         const body = {
             name: document.getElementById("name").value,
             email: document.getElementById("email").value
         };
-
         const pw = document.getElementById("password").value;
         if (pw) body.password = pw;
-
-        const update = await fetch("/users/me", {
+        const update = await apiFetch("/users/me", {
             method: "PUT",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(body)
@@ -93,14 +99,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const password = document.getElementById("deletePassword").value;
         if (!password) return alert("비밀번호를 입력하세요.");
 
-        /*
-        const delRes = await fetch("/users/me", {
-            method: "DELETE",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ password })
-        });
-        */
-        const delRes = await fetch("/users/me", {
+        const delRes = await apiFetch("/users/me", {
             method: "DELETE",
             headers: {
                 "X-Password": password  
@@ -110,11 +109,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
         if (delRes.ok) {
-            alert("회원탈퇴 완료");
+            // JWT 토큰 삭제 (예시: localStorage 사용 시)
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
             location.href = "/";
         } else {
+             let errMsg = "알 수 없는 오류";
+    try {
+        if (delRes.headers.get("content-type")?.includes("application/json")) {
             const err = await delRes.json();
-            document.getElementById("mypageResult").textContent = "오류: " + err.detail;
+            errMsg = "오류: " + err.detail;
+        } else {
+            errMsg = "오류: " + await delRes.text();
+        }
+    } catch (e) {
+        errMsg = "오류: 서버 응답 파싱 실패";
+    }
+    document.getElementById("mypageResult").textContent = errMsg;
         }
     });
 

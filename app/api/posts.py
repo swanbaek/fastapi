@@ -6,7 +6,6 @@ from starlette.status import HTTP_302_FOUND
 
 from app.core.database import get_db
 from app.deps import get_current_user, get_current_user_jwt, get_current_user_optional
-from app.api.users import get_current_user
 from app.schemas.post import PostOut
 from app.services import post_service
 from app.crud.post_crud import get_post_by_id

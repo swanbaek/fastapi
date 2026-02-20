@@ -20,6 +20,7 @@ class UserUpdate(BaseModel):
 class UserOut(UserBase):
     id: int
     created_at: datetime
+    role: Optional[str] = None
 
     class Config:
         from_attributes = True
