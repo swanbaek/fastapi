@@ -22,25 +22,37 @@
 {% endblock %}
 
 {% block script %}
-    {% if not auth_message %}
+<script src="/static/common.js"></script>
     <script>
     async function fetchUsers() {
-        const res = await fetch('/users');
-        const users = await res.json();
+        const res = await apiFetch('/api/users');
         const tbody = document.querySelector('#usersTable tbody');
         tbody.innerHTML = '';
-        users.forEach(user => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${user.id}</td>
-                <td>${user.name}</td>
-                <td>${user.email}</td>
-                <td>${user.created_at ? user.created_at.replace('T',' ').slice(0,19) : ''}</td>
-            `;
-            tbody.appendChild(tr);
-        });
+        if (res.ok) {
+            const users = await res.json();
+            users.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.created_at ? user.created_at.replace('T',' ').slice(0,19) : ''}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } else {
+            let msg = '회원목록을 볼 권한이 없습니다.';
+            if (res.status === 401) msg = '로그인 후 이용 가능합니다.';
+            if (res.status === 403) msg = '관리자만 볼 수 있습니다.';
+            try {
+                if (res.headers.get('content-type')?.includes('application/json')) {
+                    const err = await res.json();
+                    msg = err.detail || msg;
+                }
+            } catch (e) {}
+            tbody.innerHTML = `<tr><td colspan="4" style="color:red;text-align:center;">${msg}</td></tr>`;
+        }
     }
     fetchUsers();
     </script>
-    {% endif %}
 {% endblock %}

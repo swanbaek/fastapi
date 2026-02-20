@@ -37,7 +37,7 @@ def create_new_post(db: Session, title: str, content: str, file, current_user):
     post = Post(
         title=title,
         content=content,
-        user_id=current_user["id"],
+        user_id=current_user,
         file_url=file_url,
         file_name=file_name,
         created_at=datetime.now(),

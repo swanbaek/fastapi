@@ -38,7 +38,7 @@ def create_post(
     current_user=Depends(get_current_user_jwt)
 ):
     post = post_service.create_new_post(
-        db, title, content, file, current_user
+        db, title, content, file, current_user['id']
     )
     return RedirectResponse(url=f"/posts/{post.id}", status_code=HTTP_302_FOUND)
 # 글쓰기 등 "로그인 필수" 라우트는 기존 get_current_user(401 발생)로 두고,
@@ -63,13 +63,13 @@ def update_post(
     current_user=Depends(get_current_user_jwt)
 ):
     post = get_post_by_id(db, post_id)
-    post_service.validate_post_owner(post, current_user["id"])
+    post_service.validate_post_owner(post, current_user['id'])
     post_service.update_existing_post(db, post, title, content, file)
     return RedirectResponse(url=f"/posts/{post.id}", status_code=HTTP_302_FOUND)
 
 @router.post("/{post_id}/delete")
 def delete_post(post_id: int, db: Session = Depends(get_db), current_user=Depends(get_current_user_jwt)):
     post = get_post_by_id(db, post_id)
-    post_service.validate_post_owner(post, current_user["id"])
+    post_service.validate_post_owner(post, current_user['id'])
     post_service.delete_post_with_file(db, post)
     return {"result": "success"}

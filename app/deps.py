@@ -55,10 +55,11 @@ def get_current_user_jwt(token: str = Depends(bearer)):
             algorithms=["HS256"]
         )
         print('decoded token:', decoded)  # 디버깅용 출력
-        user_id =  decoded.get("id")
+        user_id = decoded.get("id")
+        role = decoded.get("role")
         if not user_id:
             raise HTTPException(status_code=401, detail="토큰에 user_id가 없습니다.")
-        return user_id
+        return {"id": user_id, "role": role}
     except JWTError:
         raise HTTPException(status_code=403, detail="유효하지 않은 토큰입니다.")
 

@@ -49,9 +49,8 @@ async def favicon():
 
 @app.get("/users/list", response_class=HTMLResponse)
 async def users_page(request: Request):
-    if not request.session.get("user_id"):
-        return templates.TemplateResponse("users.html", {"request": request, "auth_message": "로그인 해야 이용 가능합니다."})
-    return templates.TemplateResponse("users.html", {"request": request, "auth_message": None})
+    # 항상 users.html 렌더링, 인증/권한은 JS에서 처리
+    return templates.TemplateResponse("users.html", {"request": request})
 
 # 마이페이지 라우트가 없으면 추가
 @app.get("/mypage", response_class=HTMLResponse)
