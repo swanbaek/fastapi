@@ -1,3 +1,13 @@
+.navbar .menu a {
+    margin-right: 18px;
+    text-decoration: none;
+    color: #222e50;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+.navbar .menu a:last-child {
+    margin-right: 0;
+}
 /* 게시글 목록 테이블 스타일 */
 .post-list {
     max-width: 1200px;
@@ -139,6 +149,10 @@
 .comments h3 {
     margin-top: 0;
     color: #222e50;
+/* Ensure JS can always hide the 글쓰기 button, even with .btn-wide's !important */
+#writeBtn[style*="display: none"] {
+    display: none !important;
+}
     font-size: 1.1rem;
     margin-bottom: 12px;
 }

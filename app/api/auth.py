@@ -36,20 +36,25 @@ def signup(
 
     return {"result": "success", "message": "회원가입이 완료되었습니다."}
 
+from fastapi import Body
+
 @router.post("/login")
-def login(email: str, passwd: str, db: Session = Depends(get_db)):
+def login(
+    email: str = Body(...),
+    password: str = Body(...),
+    db: Session = Depends(get_db)
+):
     user = db.query(Member).filter(Member.email == email).first()
     if not user:
         raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 틀렸습니다.")
 
-    if not pwd_context.verify(passwd, user.passwd):
+    if not pwd_context.verify(password, user.password):
         raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 틀렸습니다.")
 
     payload = {
         "id": user.id,
         "name": user.name,
         "email": user.email,
-        "role": user.role,
     }
 
     access_token = create_access_token(payload)

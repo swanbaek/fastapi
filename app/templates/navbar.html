@@ -1,31 +1,125 @@
 <nav class="navbar">
-    <div class="menu">
+    <div class="menu" id="navbarMenu">
         <a href="/">HOME</a>
-        {% if request.session.get('user_id') %}
-                <span class="login-status">{{ request.session.get('user_name') }}님 로그인 중...</span>
-            <a href="/users/list">회원목록</a>
-            <a href="#" id="logoutLink">로그아웃</a>
-            <a href="/posts/list">게시판</a>
-            <a href="/mypage">MyPage</a>
-        {% else %}
-            <a href="/signup">회원가입</a>
-            <a href="/users/list">회원목록</a>
-            <a href="#" id="loginLink">로그인</a>
-            <a href="/posts/list">게시판</a>
-            <a href="/mypage">MyPage</a>
-        {% endif %}
+        <!-- 메뉴 항목은 JS에서 동적으로 추가 -->
+        <a href="/posts/list">게시판</a>
+        <a href="/mypage">MyPage</a>
+        <a href="/users/list">회원목록</a>
+        <!-- 로그인/회원가입/로그아웃/상태 메뉴는 JS에서 .menu에 직접 추가 -->
     </div>
     <div class="logo">EduApp</div>
 </nav>
-<script> 
-    document.addEventListener('DOMContentLoaded', function() {
-        const logoutLink = document.getElementById('logoutLink');
-        if (logoutLink) {
-            logoutLink.addEventListener('click', async function(e) {
+<script>
+// JWT 토큰의 payload(사용자 정보 등)를 파싱해서 객체로 반환하는 함수
+// 1. JWT는 "header.payload.signature" 구조의 문자열임
+// 2. payload(두 번째 부분)는 base64url로 인코딩된 JSON 문자열임
+// 3. 이 함수를 통해 accessToken에서 사용자 정보를 추출할 수 있음
+/*로그인 직후: 응답 payload로 사용자 정보 사용 가능
+새로고침/페이지 이동 후: accessToken만 남으므로, JS에서 토큰을 파싱해야 사용자 정보를 알 수 있음 → parseJwt 필요
+즉, "항상 로그인 상태 표시"를 위해 parseJwt 함수가 꼭 필요
+
+## atob() 함수 기능
+Base64로 인코딩된 문자열을 디코딩하여 원래의 문자열(바이너리 데이터를 문자열 형태)로 변환한다.
+*/
+function parseJwt(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        //+와 /는 URL에서 의미가 있어서 문제를 일으킬 수 있다. JWT는 base64url 인코딩을 사용하기 때문에, 이를 표준 base64로 변환해줘야 디코딩이 가능하다.
+        //브라우저의 atob() 함수는 일반 Base64만 디코딩 가능하기 때문에, base64url을 base64로 변환하는 과정이 필요하다. 그래야 atob()로 읽을 수 있음
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) { return null; }
+}
+/*[정리]JWT의 payload는 Base64URL 문자열임
+Base64URL은 + 대신 -, / 대신 _을 사용
+브라우저의 atob()는 Base64URL을 읽지 못함
+그래서 일반 Base64로 변환해야 함
+그래서 replace를 수행함*/
+document.addEventListener('DOMContentLoaded', function() {
+    const accessToken = localStorage.getItem('accessToken');
+    const menuDiv = document.getElementById('navbarMenu');
+    // 기존 로그인/회원가입/로그아웃/닉네임 메뉴 제거
+    function removeOldMenu() {
+        ["loginLink", "signupLink", "logoutLink", "loginStatus"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        });
+    }
+    removeOldMenu();
+
+    if (accessToken) {
+        const payload = parseJwt(accessToken);
+        if (payload && payload.name) {
+            // 로그인 상태 span
+            const statusSpan = document.createElement('span');
+            statusSpan.className = 'login-status';
+            statusSpan.id = 'loginStatus';
+            statusSpan.textContent = `${payload.name}님 로그인 중...`;
+            menuDiv.appendChild(statusSpan);
+            // 로그아웃 링크
+            const logoutA = document.createElement('a');
+            logoutA.href = '#';
+            logoutA.id = 'logoutLink';
+            logoutA.textContent = '로그아웃';
+            logoutA.addEventListener('click', function(e) {
                 e.preventDefault();
-                await fetch('/logout', { method: 'POST', credentials: 'same-origin' });
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
                 window.location.reload();
             });
+            menuDiv.appendChild(logoutA);
+        } else {
+            // 토큰 파싱 실패 시 비로그인 메뉴
+            const signupA = document.createElement('a');
+            signupA.href = '/signup';
+            signupA.id = 'signupLink';
+            signupA.textContent = '회원가입';
+            menuDiv.appendChild(signupA);
+            const loginA = document.createElement('a');
+            loginA.href = '#';
+            loginA.id = 'loginLink';
+            loginA.textContent = '로그인';
+            menuDiv.appendChild(loginA);
         }
-    });
+    } else {
+        // 비로그인 상태 메뉴
+        const signupA = document.createElement('a');
+        signupA.href = '/signup';
+        signupA.id = 'signupLink';
+        signupA.textContent = '회원가입';
+        menuDiv.appendChild(signupA);
+        const loginA = document.createElement('a');
+        loginA.href = '#';
+        loginA.id = 'loginLink';
+        loginA.textContent = '로그인';
+        menuDiv.appendChild(loginA);
+    }
+});
 </script>
+<style>
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+#navbarUserArea {
+    display: inline-flex;
+    align-items: center;
+}
+.login-status {
+    font-weight: 500;
+}
+#logoutLink {
+    margin-left: 10px;
+    color: #eef1f4;
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+}
+#logoutLink:hover {
+    text-decoration: underline;
+}
+</style>

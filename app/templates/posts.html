@@ -7,9 +7,8 @@
     <h1 style="text-align: center;margin-bottom:1.7rem">📝 Posts</h1>
     <div class="post-header" style="display:flex; justify-content:flex-end; align-items:center;gap:8px; margin-bottom:18px;">       
         <a href="/posts/list" class="btn btn-danger btn-wide">글목록</a>
-        {% if current_user %}
-        <a href="/posts/new" class="btn btn-primary btn-wide">글쓰기</a>
-        {% endif %}
+        <!-- <a href="/posts/new" class="btn btn-primary btn-wide" id="writeBtn" style="display:none;">글쓰기</a> -->
+         <span id="writeBtnArea"></span>
         
     </div>
     <table class="post-table">
@@ -36,7 +35,7 @@
                         {{ post.title }}
                     </span>
                 </td>
-                <td>{{ post.author or post.user.name or '알 수 없음' }}</td>
+                <td>{{ post.author.name if post.author else '알 수 없음' }}</td>
                 <td>{{ post.created_at.strftime('%y-%m-%d') if post.created_at else '' }}</td>
                 <td>{{ post.hit_count }}</td>
             </tr>
@@ -50,5 +49,18 @@
 {% endblock %}
 
 {% block script %}
-<!-- 필요시 JS 추가 -->
+<script src="/static/common.js"></script>
+<script>
+// 로그인 상태면 글쓰기 버튼 보이기
+document.addEventListener('DOMContentLoaded', function() {
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+        const payload = parseJwt(accessToken);  // base.html에 parseJwt 있으면 그대로 사용
+        if (payload) {
+            document.getElementById('writeBtnArea').innerHTML = 
+                '<a href="/posts/new" class="btn btn-primary btn-wide">글쓰기</a>';
+        }
+    }
+});
+</script>
 {% endblock %}
