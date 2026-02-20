@@ -30,13 +30,14 @@ def get_post_detail(db: Session, post_id: int):
 
 # 새 게시글 생성
 def create_new_post(db: Session, title: str, content: str, file, current_user):
+    print(">> create_new_post() current_user:", current_user)  # 디버깅용 출력
     file_url = save_upload_file(file) if file else None  # 파일 업로드 처리
     file_name = file.filename if file and file.filename else None  # 원본 파일명 저장
 
     post = Post(
         title=title,
         content=content,
-        user_id=current_user.id,
+        user_id=current_user["id"],
         file_url=file_url,
         file_name=file_name,
         created_at=datetime.now(),

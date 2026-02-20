@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from starlette.status import HTTP_302_FOUND
 
 from app.core.database import get_db
-from app.deps import get_current_user, get_current_user_optional
+from app.deps import get_current_user, get_current_user_jwt, get_current_user_optional
 from app.api.users import get_current_user
 from app.schemas.post import PostOut
 from app.services import post_service
@@ -26,8 +26,8 @@ def list_posts(db: Session = Depends(get_db)):
     return post_service.list_posts(db)
 
 @router.get("/new")
-def new_post_form(request: Request, current_user=Depends(get_current_user)):
-    return templates.TemplateResponse("post_form.html", {"request": request, "current_user": current_user})
+def new_post_form(request: Request):
+    return templates.TemplateResponse("post_form.html", {"request": request})
 
 @router.post("/new")
 def create_post(
@@ -36,7 +36,7 @@ def create_post(
     content: str = Form(...),
     file: UploadFile = File(None),
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user)
+    current_user=Depends(get_current_user_jwt)
 ):
     post = post_service.create_new_post(
         db, title, content, file, current_user
@@ -45,11 +45,9 @@ def create_post(
 # 글쓰기 등 "로그인 필수" 라우트는 기존 get_current_user(401 발생)로 두고,
 #옵셔널" 라우트(상세, 수정, 삭제)는 get_current_user_optional로 처리하면 모달이 정상적으로 뜹니다.
 @router.get("/{post_id}")
-def post_detail(request: Request, post_id: int, db: Session = Depends(get_db), current_user=Depends(get_current_user_optional)):
-    if not current_user:
-        return templates.TemplateResponse("post_detail.html", {"request": request, "auth_message": "로그인이 필요합니다."})	
+def post_detail(request: Request, post_id: int, db: Session = Depends(get_db)):
     post = post_service.get_post_detail(db, post_id)
-    return templates.TemplateResponse("post_detail.html", {"request": request, "post": post, "current_user": current_user})
+    return templates.TemplateResponse("post_detail.html", {"request": request, "post": post})
 
 @router.get("/{post_id}/edit")
 def edit_post_form(request: Request, post_id: int, db: Session = Depends(get_db), current_user=Depends(get_current_user_optional)):

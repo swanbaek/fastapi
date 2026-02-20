@@ -19,9 +19,12 @@ async function apiFetch(url, options = {}, retry = true) {
     if (accessToken) {
         options.headers['Authorization'] = 'Bearer ' + accessToken;
     }
+    ///////////////////////////
+    const originalBody = options.body; // 추가: body 미리 저장. body가 변형됐을 경우를 대비한 방어적 코드
+    ///////////////////////////
     let response = await fetch(url, options);
     // accessToken 만료 시 refreshToken으로 재발급 시도
-    if (response.status === 401 && retry) {
+    if ((response.status === 401  || response.status === 403) && retry) {
         const refreshToken = localStorage.getItem('refreshToken');
         if (refreshToken) {
             const refreshRes = await fetch('/auth/refresh', {
@@ -35,6 +38,9 @@ async function apiFetch(url, options = {}, retry = true) {
                     localStorage.setItem('accessToken', data.accessToken);
                     // 재시도
                     options.headers['Authorization'] = 'Bearer ' + data.accessToken;
+                    options.body = originalBody; 
+                    // body 복원 (옵션) body가 변형됐을 경우를 대비한 방어적 코드
+
                     return fetch(url, options);
                 }
             } else {

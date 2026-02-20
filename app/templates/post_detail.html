@@ -14,7 +14,7 @@
         <h2 class="post-title">{{ post.title }}</h2>
         <div class="post-meta">
             <span class="post-author"><i class="fa fa-user"></i> 글번호: {{ post.id or '알 수 없음' }}</span>
-            <span class="post-author"><i class="fa fa-user"></i> 작성자: {{ post.user.name or '알 수 없음' }}</span>
+            <span class="post-author"><i class="fa fa-user"></i> 작성자: {{ post.author.name or '알 수 없음' }}</span>
             <span class="post-date"><i class="fa fa-calendar"></i> 작성일: {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
             <span class="post-views"><i class="fa fa-eye"></i> 조회수: {{ post.hit_count }}</span>
         </div>
@@ -33,17 +33,10 @@
         </div>
         {% endif %}
     </div>
-    <div class="post-actions">
-    {# 로그인한 사용자와 글쓴이가 같을 때만 수정/삭제 버튼 노출 
-        {{current_user}} /// {{post.user_id}}
-    #}
-    
-    {% if current_user and current_user == post.user_id %}
-    <a href="/posts/{{ post.id }}/edit" class="btn btn-warning btn-wide">수정</a>
-    <a href="javascript:void(0)" onclick="deletePost({{ post.id }})" class="btn btn-danger btn-wide">삭제</a>
-    {% endif %}
-    <a href="/posts/list" class="btn btn-light btn-wide">목록으로</a>
-    </div>
+        <div class="post-actions">
+            <span id="editDeleteArea"></span>
+            <a href="/posts/list" class="btn btn-light btn-wide">목록으로</a>
+        </div>
 
     <div class="comments">
         <h3>댓글</h3>
@@ -54,39 +47,60 @@
             <p>{{ comment.content }}</p>
         </div>
         {% endfor %}
-        {% if current_user %}
-        <form method="post" action="/posts/{{ post.id }}/comments">
-            <textarea name="content" placeholder="댓글을 입력하세요" required id="comment_content"></textarea>
-            <button type="submit" class="btn btn-primary">댓글 작성</button>
-        </form>
-        {% endif %}
+        <span id="commentFormArea"></span>
     </div>
 </div>
 {% endif %}
 {% endblock %}
 
 {% block script %}
-<!-- 필요시 JS 추가 -->
- <script>
-    // 게시글 삭제: 본인 글만 삭제 가능 (서버에서 한 번 더 권한 검증)
-    async function deletePost(postId) {
-        if (!confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
-            return;
+<script src="/static/common.js"></script>
+<script>
+// 수정/삭제 버튼 동적 생성
+document.addEventListener('DOMContentLoaded', function() {
+    const accessToken = localStorage.getItem('accessToken');
+    const editDeleteArea = document.getElementById('editDeleteArea');
+    const commentFormArea = document.getElementById('commentFormArea');
+    // post.user_id는 템플릿에서 window.postUserId로 전달
+    const postUserId = window.postUserId = {{ post.user_id }};
+    if (accessToken && typeof parseJwt === 'function') {
+        const payload = parseJwt(accessToken);
+        if (payload && payload.id && payload.id === postUserId) {
+            // 본인 글이면 수정/삭제 버튼 노출
+            editDeleteArea.innerHTML = `
+                <a href="/posts/{{ post.id }}/edit" class="btn btn-warning btn-wide">수정</a>
+                <a href="javascript:void(0)" onclick="deletePost({{ post.id }})" class="btn btn-danger btn-wide">삭제</a>
+            `;
         }
-        try {
-            const response = await fetch(`/posts/${postId}/delete`, {
-                method: 'POST'
-            });
-            if (response.ok) {
-                alert('게시글이 삭제되었습니다.');
-                window.location.href = '/posts/list';
-            } else {
-                alert('삭제에 실패했습니다.');
-            }
-        } catch (error) {
-            console.error('삭제 오류:', error);
-            alert('오류가 발생했습니다.');
+        // 댓글 작성 폼 노출 (로그인한 경우)
+        if (payload && payload.id) {
+            commentFormArea.innerHTML = `
+                <form method="post" action="/posts/{{ post.id }}/comments">
+                    <textarea name="content" placeholder="댓글을 입력하세요" required id="comment_content"></textarea>
+                    <button type="submit" class="btn btn-primary">댓글 작성</button>
+                </form>
+            `;
         }
     }
+});
+// 게시글 삭제: 본인 글만 삭제 가능 (서버에서 한 번 더 권한 검증)
+async function deletePost(postId) {
+    if (!confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+        return;
+    }
+    try {
+        const response = await apiFetch(`/posts/${postId}/delete`, {
+            method: 'POST'
+        });
+        if (response.ok) {
+            alert('게시글이 삭제되었습니다.');
+            window.location.href = '/posts/list';
+        } else {
+            alert('삭제 권한이 없거나 오류가 발생했습니다.');
+        }
+    } catch (err) {
+        alert('네트워크 오류');
+    }
+}
 </script>
 {% endblock %}
