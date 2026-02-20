@@ -1,13 +1,13 @@
 # EduApp FastAPI 프로젝트
 
 ## 소개
-이 프로젝트는 FastAPI 기반의 웹 애플리케이션으로, 회원가입, 로그인, 회원 목록 조회 기능을 제공합니다. 로그인시 JWT 로그인 처리를 통해 사용자 인증과 인가 처리를 하는 것이 목적입니다
+이 프로젝트는 FastAPI 기반의 웹 애플리케이션으로, 회원가입, JWT 로그인, 회원 목록/게시글 CRUD 기능을 제공합니다. JWT(Json Web Token) 기반 인증/인가 처리를 통해 보안성과 확장성을 높였습니다.
 
 ## 주요 기능
-- **회원가입**: 사용자는 이름, 이메일, 비밀번호를 입력해 회원가입할 수 있습니다. 이메일 중복 체크 및 비밀번호 해싱(bcrypt) 적용.
-- **로그인/로그아웃**: 이메일과 비밀번호로 로그인, 세션 기반 인증. 로그아웃 시 세션 삭제.
-- **회원 목록**: 전체 회원 목록을 조회할 수 있습니다. (로그인 필요)
-- **회원 정보 수정/삭제**: 회원 정보(이름, 이메일, 비밀번호) 수정 및 회원 삭제 기능 제공.
+- **회원가입**: 이름, 이메일, 비밀번호 입력 후 회원가입. 이메일 중복 체크 및 비밀번호 해싱(bcrypt) 적용.
+- **JWT 로그인/로그아웃**: 이메일+비밀번호로 로그인 시 JWT 토큰(access/refresh) 발급, 클라이언트(브라우저) LocalStorage에 저장. 로그아웃 시 토큰 삭제.
+- **회원 목록**: JWT 토큰이 있는 경우 전체 회원 목록 조회 가능.
+- **회원 정보 수정/삭제**: JWT 토큰이 있는 경우 내 정보 수정/탈퇴 가능.
 
 ## 기술 스택
 - Python 3.9+
@@ -16,7 +16,7 @@
 - bcrypt (비밀번호 해싱)
 - Jinja2 (템플릿)
 - python-dotenv (환경변수 관리)
-- Starlette SessionMiddleware (세션)
+- python-jose (JWT 토큰 발급/검증)
 
 ## 폴더 구조
 ```
@@ -38,7 +38,7 @@ app/
 app/
   api/
     users.py      # 회원 관련 API (CRUD)
-    login.py      # 로그인/로그아웃 API
+    login.py      # JWT 로그인/로그아웃 API
   core/
     db.py         # DB 연결 함수 (get_connection)
   schemas/
@@ -49,18 +49,21 @@ main.py          # FastAPI 앱 진입점
 requirements.txt # 의존성 목록
 ```
 
-#### User 관련 API 엔드포인트
+#### User 관련 API 엔드포인트 (JWT 기반)
 | 메서드 | 경로                | 설명                        |
 |--------|---------------------|-----------------------------|
-| GET    | /users/list         | 회원목록 페이지(HTML, 로그인 필요) |
-| GET    | /users              | 회원목록(JSON, 로그인 필요, JS fetch용) |
-| GET    | /users/me           | 내 정보 조회 (로그인 필요)   |
+| GET    | /users/list         | 회원목록 페이지(HTML, JWT 필요시 JS로 제어) |
+| GET    | /users              | 회원목록(JSON, JWT 필요, JS fetch Authorization 헤더) |
+| GET    | /users/me           | 내 정보 조회 (JWT 필요)   |
 | GET    | /users/{user_id}    | 특정 회원 정보 조회         |
 | POST   | /users              | 회원가입 (JSON)             |
 | POST   | /users2             | 회원가입 (Form)             |
-| PUT    | /users/me           | 내 정보 수정 (로그인 필요)   |
-| PATCH  | /users/me           | 내 정보 일부 수정 (로그인 필요) |
-| DELETE | /users/me           | 회원 탈퇴 (로그인 필요)      |
+| POST   | /auth/login         | 로그인(JWT 토큰 발급, JSON) |
+| POST   | /auth/logout        | 로그아웃(토큰 삭제, 클라이언트 처리) |
+| POST   | /auth/refresh       | 토큰 재발급(리프레시)       |
+| PUT    | /users/me           | 내 정보 수정 (JWT 필요)   |
+| PATCH  | /users/me           | 내 정보 일부 수정 (JWT 필요) |
+| DELETE | /users/me           | 회원 탈퇴 (JWT 필요)      |
 
 ### Posts 관련 폴더 구조
 ```
@@ -77,17 +80,17 @@ app/
  │    └── post.py
 ```
 
-#### Posts 관련 API 엔드포인트
+#### Posts 관련 API 엔드포인트 (JWT 기반)
 | 메서드 | 경로                      | 설명                                 |
 |--------|---------------------------|--------------------------------------|
-| GET    | /posts/list               | 게시글 목록 페이지(HTML)             |
+| GET    | /posts/list               | 게시글 목록 페이지(HTML, JWT 필요시 JS로 제어) |
 | GET    | /posts                    | 게시글 목록(JSON)                    |
-| GET    | /posts/new                | 게시글 작성 폼(HTML, 로그인 필요)    |
-| POST   | /posts/new                | 게시글 작성(폼 제출, 로그인 필요)    |
-| GET    | /posts/{post_id}          | 게시글 상세(HTML, 로그인 필요시 모달) |
-| GET    | /posts/{post_id}/edit     | 게시글 수정 폼(HTML, 본인만)         |
-| POST   | /posts/{post_id}/edit     | 게시글 수정(폼 제출, 본인만)         |
-| POST   | /posts/{post_id}/delete   | 게시글 삭제(본인만)                  |
+| GET    | /posts/new                | 게시글 작성 폼(HTML, JWT 필요시 JS로 제어) |
+| POST   | /posts/new                | 게시글 작성(폼 제출, JWT 필요, Authorization 헤더) |
+| GET    | /posts/{post_id}          | 게시글 상세(HTML, JWT 필요시 JS로 제어) |
+| GET    | /posts/{post_id}/edit     | 게시글 수정 폼(HTML, 본인만, JS로 제어) |
+| POST   | /posts/{post_id}/edit     | 게시글 수정(폼 제출, JWT 필요, 본인만) |
+| POST   | /posts/{post_id}/delete   | 게시글 삭제(JWT 필요, 본인만)        |
 
 ### 화면 예시
 
@@ -125,7 +128,7 @@ app/
 ## 기타 참고
 - SQLAlchemy 등 ORM 미사용, 모든 DB작업은 SQL문으로 처리
 - 비밀번호는 bcrypt로 해싱 저장
-- 세션 기반 인증(Starlette SessionMiddleware)
+- JWT 기반 인증 (python-jose, access/refresh 토큰)
 - 템플릿(Jinja2) 기반의 기본 UI 제공
 - 테스트/마이그레이션용 `pytest`, `alembic` 등은 필요시 사용
 
