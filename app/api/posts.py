@@ -74,10 +74,8 @@ def update_post(
     return RedirectResponse(url=f"/posts/{post.id}", status_code=HTTP_302_FOUND)
 
 @router.post("/{post_id}/delete")
-def delete_post(post_id: int, db: Session = Depends(get_db), current_user=Depends(get_current_user_optional)):
-    if not current_user:
-        return templates.TemplateResponse("post_detail.html", {"request": db, "auth_message": "로그인이 필요합니다."})
+def delete_post(post_id: int, db: Session = Depends(get_db), current_user=Depends(get_current_user_jwt)):
     post = get_post_by_id(db, post_id)
-    post_service.validate_post_owner(post, current_user)
+    post_service.validate_post_owner(post, current_user["id"])
     post_service.delete_post_with_file(db, post)
-    return RedirectResponse(url="/posts/list", status_code=HTTP_302_FOUND)
+    return {"result": "success"}
