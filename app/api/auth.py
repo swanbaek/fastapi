@@ -76,26 +76,30 @@ def login(
 
 from jose import jwt, JWTError
 #6. RefreshToken 재발급 API
+from pydantic import BaseModel
+
+class RefreshRequest(BaseModel):
+    refreshToken: str
+
 @router.post("/refresh")
-def refresh_token(refreshToken: str, db: Session = Depends(get_db)):
+def refresh_token(body: RefreshRequest, db: Session = Depends(get_db)):
+    print(">> refresh_token() body:", body)  # 디버깅용 출력
     try:
-        decoded = jwt.decode(refreshToken, settings.REFRESH_SECRET, algorithms=["HS256"])
+        decoded = jwt.decode(body.refreshToken, settings.REFRESH_SECRET, algorithms=["HS256"])
     except JWTError:
         raise HTTPException(status_code=403, detail="유효하지 않은 refreshToken")
 
-    user = db.query(Member).filter(Member.refresh_token == refreshToken).first()
+    user = db.query(Member).filter(Member.refresh_token == body.refreshToken).first()
     if not user:
-        raise HTTPException(status_code=403, detail="인증받지 않은 회원입니다.")
-
+        raise HTTPException(status_code=403, detail="유효하지 않은 refreshToken")
+    # 이 부분이 없으면 안됨
     new_access = create_access_token({
         "id": user.id,
         "name": user.name,
         "email": user.email,
         "role": user.role,
     })
-
     return {"accessToken": new_access}
-
 
 # 7. 로그아웃 API (RefreshToken 제거)
 @router.post("/logout")
