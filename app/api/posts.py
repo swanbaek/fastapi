@@ -50,12 +50,9 @@ def post_detail(request: Request, post_id: int, db: Session = Depends(get_db)):
     return templates.TemplateResponse("post_detail.html", {"request": request, "post": post})
 
 @router.get("/{post_id}/edit")
-def edit_post_form(request: Request, post_id: int, db: Session = Depends(get_db), current_user=Depends(get_current_user_optional)):
-    if not current_user:
-        return templates.TemplateResponse("post_form.html", {"request": request, "auth_message": "로그인이 필요합니다."})
+def edit_post_form(request: Request, post_id: int, db: Session = Depends(get_db)):
     post = get_post_by_id(db, post_id)
-    post_service.validate_post_owner(post, current_user)
-    return templates.TemplateResponse("post_form.html", {"request": request, "post": post, "current_user": current_user})
+    return templates.TemplateResponse("post_form.html", {"request": request, "post": post})
 
 @router.post("/{post_id}/edit")
 def update_post(
@@ -64,12 +61,10 @@ def update_post(
     content: str = Form(...),
     file: UploadFile = File(None),
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user_optional)
+    current_user=Depends(get_current_user_jwt)
 ):
-    if not current_user:
-        return templates.TemplateResponse("post_form.html", {"request": db, "auth_message": "로그인이 필요합니다."})
     post = get_post_by_id(db, post_id)
-    post_service.validate_post_owner(post, current_user)
+    post_service.validate_post_owner(post, current_user["id"])
     post_service.update_existing_post(db, post, title, content, file)
     return RedirectResponse(url=f"/posts/{post.id}", status_code=HTTP_302_FOUND)
 
