@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import posts
 from app.api.members import router as members_router
 from app.api.auth import router as auth_router
-from app.api.login import router as login_router
+
 from app.api.members import router as members_router
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -69,4 +69,4 @@ async def signup_page(request: Request):
 app.include_router(posts.router)
 app.include_router(members_router, prefix="/api")
 app.include_router(auth_router)
-app.include_router(login_router)
+

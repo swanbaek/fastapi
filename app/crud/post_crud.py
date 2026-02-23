@@ -7,6 +7,14 @@ from app.models.post import Post
 def get_posts(db: Session):
     return db.query(Post).options(joinedload(Post.author)).order_by(Post.id.desc()).all()
 
+# 게시글 목록 조회 (페이징 + 검색)
+def get_posts_paging(db: Session, page: int = 1, size: int = 10, search: str = ""):
+    query = db.query(Post)
+    if search:
+        query = query.filter(Post.title.contains(search))
+    offset = (page - 1) * size
+    return query.order_by(Post.id.desc()).offset(offset).limit(size).all()
+
 # 게시글 단일 조회 (id로)
 def get_post_by_id(db: Session, post_id: int):
     return db.query(Post).filter(Post.id == post_id).first()

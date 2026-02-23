@@ -20,9 +20,19 @@ def post_list_page(request: Request, db: Session = Depends(get_db)):
     current_user = request.session.get("user_id")
     return templates.TemplateResponse("posts.html", {"request": request, "posts": posts, "current_user": current_user})
 
+# 페이징 처리 안할 때
+# @router.get("/", response_model=List[PostOut])
+# def list_posts(db: Session = Depends(get_db)):
+#     return post_service.list_posts(db)
+
 @router.get("/", response_model=List[PostOut])
-def list_posts(db: Session = Depends(get_db)):
-    return post_service.list_posts(db)
+def list_posts(
+    db: Session = Depends(get_db),
+    page: int = 1,
+    size: int = 3,
+    search: str = ""
+):
+    return post_service.list_posts_paging(db, page=page, size=size, search=search)
 
 @router.get("/new")
 def new_post_form(request: Request):
