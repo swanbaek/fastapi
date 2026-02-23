@@ -12,8 +12,10 @@ def get_posts_paging(db: Session, page: int = 1, size: int = 10, search: str = "
     query = db.query(Post)
     if search:
         query = query.filter(Post.title.contains(search))
+    total = query.count()
     offset = (page - 1) * size
-    return query.order_by(Post.id.desc()).offset(offset).limit(size).all()
+    posts = query.order_by(Post.id.desc()).offset(offset).limit(size).all()
+    return total, posts
 
 # 게시글 단일 조회 (id로)
 def get_post_by_id(db: Session, post_id: int):

@@ -17,8 +17,10 @@ from app.services.file_service import save_upload_file
 def list_posts(db: Session):
     return post_crud.get_posts(db)
 #게시글 목록 조회 (페이징 + 검색)
+# service
 def list_posts_paging(db: Session, page: int = 1, size: int = 10, search: str = ""):
-    return post_crud.get_posts_paging(db, page=page, size=size, search=search)
+    total, posts = post_crud.get_posts_paging(db, page=page, size=size, search=search)
+    return {"total": total, "posts": posts}
 
 # 게시글 상세 조회 및 조회수 증가
 def get_post_detail(db: Session, post_id: int):

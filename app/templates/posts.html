@@ -56,7 +56,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 let currentPage = 1;
 let currentSearch = '';
-const pageSize = 10;
+const pageSize = 3;
+const blockSize = 3; // 한 블럭에 보여줄 페이지 번호 수
 
 async function loadPosts(page, search = '') {
     currentPage = page;
@@ -67,7 +68,9 @@ async function loadPosts(page, search = '') {
     const tbody = document.querySelector('.post-table tbody');
     tbody.innerHTML = '';
     if (res.ok) {
-        const posts = await res.json();
+        const data = await res.json();
+        const posts = data.posts;
+        const total = data.total;
         if (posts.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">게시글이 없습니다.</td></tr>';
         } else {
@@ -90,47 +93,56 @@ async function loadPosts(page, search = '') {
                 tbody.appendChild(tr);
             });
         }
-        renderPagination(posts.length);
+        renderPagination(total);
     } else {
         tbody.innerHTML = '<tr><td colspan="5" style="color:red;text-align:center;">게시글을 불러올 수 없습니다.</td></tr>';
     }
 }
 
-function renderPagination(postCount) {
+function renderPagination(total) {
     const pagUl = document.getElementById('paginationUl');
     pagUl.innerHTML = '';
-    // Bootstrap pagination: 이전, 현재, 다음
+    const totalPages = Math.ceil(total / pageSize);
+    if (totalPages <= 1) return;
+
+    // 현재 블럭의 시작/끝 페이지
+    const blockStart = Math.floor((currentPage - 1) / blockSize) * blockSize + 1;
+    const blockEnd = Math.min(blockStart + blockSize - 1, totalPages);
+
+    // 이전 블럭 버튼
     const prevLi = document.createElement('li');
-    prevLi.className = 'page-item' + (currentPage === 1 ? ' disabled' : '');
+    prevLi.className = 'page-item' + (blockStart === 1 ? ' disabled' : '');
     const prevBtn = document.createElement('button');
     prevBtn.className = 'page-link';
     prevBtn.textContent = '이전';
-    prevBtn.disabled = currentPage === 1;
-    prevBtn.onclick = () => loadPosts(currentPage - 1, currentSearch);
+    prevBtn.disabled = blockStart === 1;
+    prevBtn.onclick = () => loadPosts(blockStart - 1, currentSearch);
     prevLi.appendChild(prevBtn);
     pagUl.appendChild(prevLi);
 
-    // 현재 페이지 표시
-    const curLi = document.createElement('li');
-    curLi.className = 'page-item active';
-    const curSpan = document.createElement('span');
-    curSpan.className = 'page-link';
-    curSpan.textContent = currentPage;
-    curLi.appendChild(curSpan);
-    pagUl.appendChild(curLi);
+    // 페이지 번호
+    for (let i = blockStart; i <= blockEnd; i++) {
+        const li = document.createElement('li');
+        li.className = 'page-item' + (i === currentPage ? ' active' : '');
+        const btn = document.createElement('button');
+        btn.className = 'page-link';
+        btn.textContent = i;
+        btn.onclick = () => loadPosts(i, currentSearch);
+        li.appendChild(btn);
+        pagUl.appendChild(li);
+    }
 
-    // 다음 버튼
+    // 다음 블럭 버튼
     const nextLi = document.createElement('li');
-    nextLi.className = 'page-item' + (postCount < pageSize ? ' disabled' : '');
+    nextLi.className = 'page-item' + (blockEnd === totalPages ? ' disabled' : '');
     const nextBtn = document.createElement('button');
     nextBtn.className = 'page-link';
     nextBtn.textContent = '다음';
-    nextBtn.disabled = postCount < pageSize;
-    nextBtn.onclick = () => loadPosts(currentPage + 1, currentSearch);
+    nextBtn.disabled = blockEnd === totalPages;
+    nextBtn.onclick = () => loadPosts(blockEnd + 1, currentSearch);
     nextLi.appendChild(nextBtn);
     pagUl.appendChild(nextLi);
 }
-
 document.getElementById('searchForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const search = document.getElementById('searchInput').value.trim();

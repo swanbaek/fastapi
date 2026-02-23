@@ -1,6 +1,6 @@
 
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
 from datetime import datetime
 
 class PostBase(BaseModel):
@@ -27,3 +27,9 @@ class PostOut(PostBase):
 	class Config:
 		#orm_mode = True
 		from_attributes = True
+
+# 게시글 목록 조회 시, 총 게시글 수와 함께 반환할 모델
+class PostListOut(BaseModel):
+    total: int
+    posts: List[PostOut]
+

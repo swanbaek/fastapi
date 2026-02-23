@@ -6,7 +6,7 @@ from starlette.status import HTTP_302_FOUND
 
 from app.core.database import get_db
 from app.deps import get_current_user, get_current_user_jwt, get_current_user_optional
-from app.schemas.post import PostOut
+from app.schemas.post import PostListOut, PostOut
 from app.services import post_service
 from app.crud.post_crud import get_post_by_id
 from typing import List
@@ -25,11 +25,12 @@ def post_list_page(request: Request, db: Session = Depends(get_db)):
 # def list_posts(db: Session = Depends(get_db)):
 #     return post_service.list_posts(db)
 
-@router.get("/", response_model=List[PostOut])
+# 페이징 + 검색 처리
+@router.get("/", response_model=PostListOut)
 def list_posts(
     db: Session = Depends(get_db),
     page: int = 1,
-    size: int = 3,
+    size: int = 10, #JS에서 3으로 설정해서 호출함. 기본값은 10이지만, 실제로는 프론트에서 전달하는 값이 우선 적용됩니다.
     search: str = ""
 ):
     return post_service.list_posts_paging(db, page=page, size=size, search=search)
