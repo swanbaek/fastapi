@@ -1,8 +1,9 @@
 # EduApp FastAPI 프로젝트
 
 ## 소개
-이 프로젝트는 FastAPI 기반의 웹 애플리케이션으로, 회원가입, JWT 로그인, 회원 목록/게시글 CRUD 기능을 제공합니다. JWT(Json Web Token) 기반 인증/인가 처리를 통해 보안성과 확장성을 높였습니다.
-기존 Posts에 페이징 처리와 검색까지 추가하였습니다
+- 이 프로젝트는 FastAPI 기반의 웹 애플리케이션으로, 회원가입, JWT 로그인, 회원 목록/게시글 CRUD 기능을 제공합니다. JWT(Json Web Token) 기반 인증/인가 처리를 통해 보안성과 확장성을 높였습니다.
+- 기존 Posts에 페이징 처리와 검색까지 추가하였습니다
+- 페이지 이동 및 검색 시 전체 페이지 리로드 없이 비동기로 데이터를 불러옵니다.
 
 ## 주요 기능
 - **회원가입**: 이름, 이메일, 비밀번호 입력 후 회원가입. 이메일 중복 체크 및 비밀번호 해싱(bcrypt) 적용.
@@ -82,7 +83,7 @@ app/
  │    └── post.py
 ```
 
-#### Posts 관련 API 엔드포인트 (JWT 기반)
+### Posts 관련 API 엔드포인트 (JWT 기반)
 | 메서드 | 경로                      | 설명                                 |
 |--------|---------------------------|--------------------------------------|
 | GET    | /posts/list               | 게시글 목록 페이지(HTML, JWT 필요시 JS로 제어) |
@@ -94,13 +95,126 @@ app/
 | POST   | /posts/{post_id}/edit     | 게시글 수정(폼 제출, JWT 필요, 본인만) |
 | POST   | /posts/{post_id}/delete   | 게시글 삭제(JWT 필요, 본인만)        |
 
+#### Posts 페이징 처리 및 검색 관련  API 엔드포인트
+
+
+```
+GET /posts/?page={page}&size={size}&search={keyword}
+```
+
+| 파라미터 | 타입 | 기본값 | 설명 |
+|----------|------|--------|------|
+| page | int | 1 | 현재 페이지 번호 |
+| size | int | 10 | 페이지당 게시글 수 |
+| search | str | "" | 제목 검색 키워드 (없으면 전체 조회) |
+
+**응답 형식 (`PostListOut`)**
+
+```json
+{
+  "total": 22,
+  "posts": [
+    {
+      "id": 1,
+      "title": "게시글 제목",
+      "author": { "name": "홍길동" },
+      "created_at": "2025-01-01T00:00:00",
+      "hit_count": 10,
+      "file_url": null
+    }
+  ]
+}
+```
+
+---
+
+### 백엔드 구현
+
+**Router** (`app/api/posts.py`)
+```python
+@router.get("/", response_model=PostListOut)
+def list_posts(
+    db: Session = Depends(get_db),
+    page: int = 1,
+    size: int = 10,
+    search: str = ""
+):
+    return post_service.list_posts_paging(db, page=page, size=size, search=search)
+```
+
+**Service** (`app/services/post_service.py`)
+```python
+def list_posts_paging(db: Session, page: int = 1, size: int = 10, search: str = ""):
+    total, posts = post_crud.get_posts(db, page=page, size=size, search=search)
+    return {"total": total, "posts": posts}
+```
+
+**CRUD** (`app/crud/post_crud.py`)
+```python
+def get_posts(db: Session, page: int = 1, size: int = 10, search: str = ""):
+    query = db.query(Post)
+    if search:
+        query = query.filter(Post.title.contains(search))
+    total = query.count()
+    offset = (page - 1) * size
+    posts = query.order_by(Post.id.desc()).offset(offset).limit(size).all()
+    return total, posts
+```
+
+**Schema** (`app/schemas/post_schema.py`)
+```python
+class PostListOut(BaseModel):
+    total: int
+    posts: List[PostOut]
+```
+
+---
+
+### 프론트엔드 구현
+
+**페이징 블럭 방식**으로 구현되어 있으며, 한 블럭에 최대 5개의 페이지 번호를 표시합니다.
+
+```
+이전 | [1] [2] [3] | 다음
+```
+
+- 블럭 끝에서 `다음` 클릭 시 다음 블럭의 첫 페이지로 이동
+- 블럭 시작에서 `이전` 클릭 시 이전 블럭의 마지막 페이지로 이동
+- 현재 페이지는 파란색으로 강조 표시
+
+```javascript
+const pageSize = 3;   // 페이지당 게시글 수
+const blockSize = 3;   // 블럭당 페이지 번호 수
+```
+
+**검색 결과 표시**
+
+테이블 상단에 검색 상태에 따라 다르게 표시됩니다.
+
+- 전체 조회 시: `전체 22건`
+- 검색 시: `"키워드" 검색결과 3건`
+
+---
+
+### 동작 흐름
+
+```
+[검색어 입력 or 페이지 클릭]
+        ↓
+fetch /posts/?page=N&size=10&search=키워드
+        ↓
+{ total: N, posts: [...] } 응답
+        ↓
+테이블 렌더링 + 건수 표시 + 페이지네이션 렌더링
+```
+
 ### 화면 예시
 
 #### 게시글 목록
-![게시글 목록](./1.png)
+![게시글 목록](./3.png)
 
-#### 게시글 상세
-![게시글 상세](./2.png)
+#### 게시글 검색
+![게시글 검색](./4.png)
 
 ## DB 연동 방식
 - `.env` 파일 또는 환경변수에서 DB 접속 정보(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DB) 로드
