@@ -12,6 +12,7 @@
 - **회원 목록**: JWT 토큰이 있고 role이 admin인 경우 전체 회원 목록 조회 가능.
 - **회원 정보 수정/삭제**: JWT 토큰이 있는 경우 내 정보 수정/탈퇴 가능.
 - **Post글 CRUD기능** : 글수정,삭제는 JWT 토큰이 있는 경우만 가능
+- **Comment글 CRUD기능** : 댓글 수정,삭제는 JWT 토큰이 있는 경우만 가능
 
 ## 기술 스택
 - Python 3.9+
@@ -128,7 +129,148 @@ GET /posts/?page={page}&size={size}&search={keyword}
 ```
 
 ---
+## 💬 댓글 기능
 
+### 구조 개요
+
+댓글은 Router → Service → CRUD 3계층으로 구현되어 있으며,  
+작성/수정/삭제는 JWT 인증이 필요하고 본인 댓글만 수정/삭제할 수 있습니다.
+
+---
+
+### 데이터 모델
+
+**Comment 모델** (`app/models/comment.py`)
+
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| id | Integer | PK |
+| content | Text | 댓글 내용 |
+| user_id | Integer | FK → members.id |
+| post_id | Integer | FK → posts.id (CASCADE) |
+| created_at | DateTime | 작성일 |
+
+---
+
+### Comment관련 API 엔드포인트
+
+| 메서드 | URL | 인증 | 설명 |
+|--------|-----|------|------|
+| GET | `/comments/post/{post_id}` | 불필요 | 특정 게시글 댓글 목록 |
+| POST | `/comments/post/{post_id}` | JWT 필요 | 댓글 작성 |
+| PUT | `/comments/{comment_id}` | JWT 필요 | 댓글 수정 (본인만) |
+| DELETE | `/comments/{comment_id}` | JWT 필요 | 댓글 삭제 (본인만) |
+
+---
+
+### 요청/응답 형식
+
+**댓글 목록 조회**
+```
+GET /comments/post/1
+```
+```json
+[
+  {
+    "id": 1,
+    "content": "댓글 내용",
+    "author": { "id": 1, "name": "홍길동", "email": "..." },
+    "created_at": "2025-01-01T00:00:00"
+  }
+]
+```
+
+**댓글 작성**
+```
+POST /comments/post/1
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{ "content": "댓글 내용" }
+```
+
+**댓글 수정**
+```
+PUT /comments/1
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{ "content": "수정된 댓글 내용" }
+```
+
+**댓글 삭제**
+```
+DELETE /comments/1
+Authorization: Bearer {token}
+```
+
+---
+
+### 백엔드 구현
+
+**CRUD** (`app/crud/comment_crud.py`)
+```python
+# 목록 조회 - author joinedload로 N+1 방지
+def get_comments_by_post(db, post_id):
+    return (
+        db.query(Comment)
+        .options(joinedload(Comment.author))
+        .filter(Comment.post_id == post_id)
+        .order_by(Comment.created_at.asc())
+        .all()
+    )
+
+# 작성
+def create_comment(db, post_id, user_id, content):
+    ...
+
+# 수정 - 본인 확인 후 수정, None(없음)/False(권한없음)/comment(성공) 반환
+def update_comment(db, comment_id, user_id, content):
+    ...
+
+# 삭제 - 본인 확인 후 삭제, None(없음)/False(권한없음)/True(성공) 반환
+def delete_comment(db, comment_id, user_id):
+    ...
+```
+
+**Schema** (`app/schemas/comment_schema.py`)
+```python
+class CommentCreate(BaseModel):
+    content: str
+
+class CommentOut(BaseModel):
+    id: int
+    content: str
+    author: Optional[UserOut] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+```
+
+---
+
+### 프론트엔드 구현
+
+게시글 상세 페이지(`post_detail.html`)에서 처리합니다.
+
+- JWT 페이로드의 `id`와 댓글의 `author.id`를 비교해 **본인 댓글에만 수정/삭제 버튼 표시**
+- 수정은 **인라인 편집** 방식 (댓글 자리에서 textarea로 전환)
+- 작성/수정/삭제 후 `location.reload()`로 목록 갱신
+- 댓글 수는 게시글 상세 헤더에 badge로 표시
+- 게시글 목록(`posts.html`)에서도 제목 옆에 댓글 수 badge 표시
+
+---
+
+### 권한 처리
+
+| 액션 | 프론트 | 백엔드 |
+|------|--------|--------|
+| 작성 | 로그인 시에만 폼 노출 | JWT 토큰 검증 |
+| 수정 | 본인 댓글에만 버튼 노출 | user_id 일치 여부 확인 |
+| 삭제 | 본인 댓글에만 버튼 노출 | user_id 일치 여부 확인 |
+
+---
 ### 백엔드 구현
 
 **Router** (`app/api/posts.py`)
@@ -211,11 +353,11 @@ fetch /posts/?page=N&size=10&search=키워드
 
 ### 화면 예시
 
-#### 게시글 목록
-![게시글 목록](./3.png)
+#### 게시글 댓글 목록
+![게시글 댓글 목록](./5.png)
 
-#### 게시글 검색
-![게시글 검색](./4.png)
+#### 게시글 목록에 댓글수 출력
+![게시글 목록](./6.png)
 
 ## DB 연동 방식
 이 프로젝트는 **SQLAlchemy** ORM을 사용하여 데이터베이스와 연동합니다.
