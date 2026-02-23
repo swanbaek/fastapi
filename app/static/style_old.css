@@ -63,7 +63,7 @@
     margin-bottom: 8px;
 }
 /* ───────────────────────────────────────────
-   🔍 검색창 + 검색 버튼 정렬
+    검색창 + 검색 버튼 정렬
    ─────────────────────────────────────────── */
 .post-header {
     display: flex !important;
@@ -79,12 +79,8 @@
     width: 320px !important;
 }
 
-#searchInput {
+#searchInput .form-control {
     flex: 1;
-    min-width: 0;
-    width: auto !important;
-    height: 38px !important;
-    margin-top: 0 !important;
     border-radius: 8px !important;
     border: 1px solid #ccc !important;
     font-size: 15px !important;
@@ -96,7 +92,7 @@
 }
 
 /* ───────────────────────────────────────────
-   📝 글목록·글쓰기 버튼
+    글목록·글쓰기 버튼
    ─────────────────────────────────────────── */
 .btn-wide {
     padding: 8px 20px !important;
@@ -105,43 +101,11 @@
 }
 
 /* 페이지네이션 */
-.pagination {
-    display: flex;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    gap: 3px;
-    align-items: center;
-    justify-content: center;
-}
-.pagination .page-item {
-    display: flex;
-    align-items: center;
-}
-.pagination .page-item.active .page-link {
-    color: #fff !important;
-}
 .pagination .page-item .page-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 36px;
-    padding: 0 14px;
+    padding: 8px 14px;
     font-size: 15px;
     border-radius: 6px;
     margin: 0 3px;
-    width: auto !important;
-    margin-top: 0 !important;
-    background: #f6f8fc;
-    color: #222e50;
-    border: 1px solid #e3eafc;
-    cursor: pointer;
-    transition: background 0.15s;
-    line-height: 1;
-}
-.pagination .page-item .page-link:hover {
-    background: #e3eafc;
-    color: #222e50;
 }
 
 .pagination .page-item.active .page-link {
@@ -280,11 +244,11 @@
     cursor: pointer;
 }
 .btn-primary {
-    background: #007bff !important;
-    color: #fff !important;
+    background: #007bff;
+    color: #fff;
 }
 .btn-primary:hover {
-    background: #0056b3 !important;
+    background: #0056b3;
 }
 .btn-secondary {
     background: #bfc8e6;
@@ -564,10 +528,7 @@ input[type="text"], input[type="email"], input[type="password"] {
     background: #f6f8fc;
     box-sizing: border-box;
 }
-/* 전역 버튼 - 로그인/회원가입 등 폼 제출 버튼 전용 */
-.container > form button,
-#loginForm button,
-#signupForm button {
+button {
     width: 100%;
     max-width: 100%;
     padding: 12px 0;
@@ -582,24 +543,9 @@ input[type="text"], input[type="email"], input[type="password"] {
     transition: background 0.2s;
     box-sizing: border-box;
 }
-.container > form button:hover,
-#loginForm button:hover,
-#signupForm button:hover {
+button:hover {
     background: #ffb400;
     color: #222e50;
-}
-
-/* 게시판 영역 버튼은 width:auto 유지 */
-.post-list button,
-.post-detail-card button,
-.comments button,
-.post-header button,
-#paginationUl button {
-    width: auto !important;
-    margin-top: 0 !important;
-    max-width: none !important;
-    padding: 8px 18px !important;
-    font-size: 15px !important;
 }
 .result {
     margin-top: 18px;
@@ -607,7 +553,9 @@ input[type="text"], input[type="email"], input[type="password"] {
     color: #222e50;
     font-weight: 500;
 }
-
+#signupForm{
+    /* removed for unified form width */
+}
 #usersTable{
     margin:auto;
     width:90%; 

@@ -1,6 +1,7 @@
 # 의존성 주입 관련 함수 정의
 from app.core.database import SessionLocal
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session	
+from fastapi import Request, HTTPException
 
 def get_db():
 	'''	DB 세션을 안전하게 생성·관리하기 위한 의존성(Dependency) 함수
@@ -22,3 +23,49 @@ def get_db():
 #                   ├─ yield db  ───────────────► (라우터로 db 전달)
 # 라우터 실행 끝 ◄─────── (다시 돌아옴)
 #                   └─ finally: db.close()        (세션 닫기)
+
+
+def get_current_user(request: Request) -> int:
+    """세션에서 로그인 중인 사용자 ID 가져오기"""
+
+    print(">> get_current_user 세션 내용:", request.session)
+
+    user_id = request.session.get("user_id")
+    if not user_id:
+        raise HTTPException(status_code=401, detail="로그인이 필요합니다.")
+    return user_id
+
+def get_current_user_optional(request: Request):
+    """로그인 안 했으면 None 반환"""
+    return request.session.get("user_id")
+
+#Node.js의 verifyAccessToken 미들웨어 대응.
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBearer
+from jose import jwt, JWTError
+from app.core.config import settings
+
+bearer = HTTPBearer()
+
+def get_current_user_jwt(token: str = Depends(bearer)):
+    try:
+        decoded = jwt.decode(
+            token.credentials,
+            settings.ACCESS_SECRET,
+            algorithms=["HS256"]
+        )
+        print('decoded token:', decoded)  # 디버깅용 출력
+        user_id = decoded.get("id")
+        role = decoded.get("role")
+        if not user_id:
+            raise HTTPException(status_code=401, detail="토큰에 user_id가 없습니다.")
+        return {"id": user_id, "role": role}
+    except JWTError:
+        raise HTTPException(status_code=403, detail="유효하지 않은 토큰입니다.")
+
+
+#관리자 권한 체크
+def admin_only(user = Depends(get_current_user)):
+    if user["role"] != "ADMIN":
+        raise HTTPException(status_code=403, detail="관리자 권한 필요")
+    return user

@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}게시글 목록{% endblock %}
+
+{% block content %}
+<div class="container post-list">
+    <h1 style="text-align: center;margin-bottom:1.7rem">📝 Posts</h1>
+    <div class="post-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+        <form id="searchForm" class="input-group" style="max-width:320px;">
+            <input type="text" id="searchInput" class="form-control" placeholder="제목 검색" style="font-size:15px;">
+            <button type="submit" class="btn btn-primary">검색</button>
+        </form>
+        <div style="display:flex;gap:8px;align-items:center;">
+            <a href="/posts/list" class="btn btn-danger btn-wide">글목록</a>
+            <span id="writeBtnArea"></span>
+        </div>
+    </div>
+    <!-- 총 게시글 수 or 검색한 게시글 수 출력 -->
+    <div id="postSummary" style="margin-bottom:10px; font-size:14px; color:#6b7a99;"></div>
+    <table class="post-table">
+        <thead>
+            <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>작성일</th>
+                <th>조회수</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- JS로 게시글이 채워집니다 -->
+        </tbody>
+    </table>
+    <nav>
+        <ul class="pagination justify-content-center" id="paginationUl">
+            <!-- JS로 페이지네이션이 채워집니다 -->
+        </ul>
+    </nav>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="/static/common.js"></script>
+<script>
+// 로그인 상태면 글쓰기 버튼 보이기
+document.addEventListener('DOMContentLoaded', function() {
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+        const payload = parseJwt(accessToken);
+        if (payload) {
+            document.getElementById('writeBtnArea').innerHTML = 
+                '<a href="/posts/new" class="btn btn-primary btn-wide">글쓰기</a>';
+        }
+    }
+    // 초기 게시글 로드
+    loadPosts(1);
+});
+
+let currentPage = 1;
+let currentSearch = '';
+const pageSize = 3;
+const blockSize = 3; // 한 블럭에 보여줄 페이지 번호 수
+
+async function loadPosts(page, search = '') {
+    currentPage = page;
+    currentSearch = search;
+    let url = `/posts/?page=${page}&size=${pageSize}`;
+    if (search) url += `&search=${encodeURIComponent(search)}`;
+    const res = await fetch(url);
+    const tbody = document.querySelector('.post-table tbody');
+    tbody.innerHTML = '';
+    if (res.ok) {
+        const data = await res.json();
+        const posts = data.posts;
+        const total = data.total;
+
+        // 검색결과 / 총 게시글 수 표시
+        const summary = document.getElementById('postSummary');
+        if (search) {
+            summary.textContent = `"${search}" 검색결과 ${total}건`;
+        } else {
+            summary.textContent = `전체 ${total}건`;
+        }
+
+        if (posts.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">게시글이 없습니다.</td></tr>';
+        } else {
+            posts.forEach(post => {
+                const tr = document.createElement('tr');
+                tr.className = 'post-row';
+                tr.onclick = () => location.href = `/posts/${post.id}`;
+                tr.innerHTML = `
+                    <td>${post.id}</td>
+                    <td class="post-title">
+                        <span class="post-title-text">
+                            ${(post.file_url && post.file_url.startsWith('/static/uploads/') && post.file_url.includes('.')) ? '<span title="첨부파일 있음" style="vertical-align:middle; margin-left:6px; font-size:18px;">📎</span>' : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'}
+                            ${post.title}
+                            ${post.comments.length > 0 ? `<span style="display:inline-block; background:#aaa; color:#fff; border-radius:12px; font-size:12px; padding:1px 8px; margin-left:6px; vertical-align:middle;">${post.comments.length}</span>` : ''}
+                        </span>
+                    </td>
+                    <td>${post.author && post.author.name ? post.author.name : '알 수 없음'}</td>
+                    <td>${post.created_at ? post.created_at.slice(2,10).replace('-','.') : ''}</td>
+                    <td>${post.hit_count}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        renderPagination(total);
+    } else {
+        tbody.innerHTML = '<tr><td colspan="5" style="color:red;text-align:center;">게시글을 불러올 수 없습니다.</td></tr>';
+    }
+}
+
+function renderPagination(total) {
+    const pagUl = document.getElementById('paginationUl');
+    pagUl.innerHTML = '';
+    const totalPages = Math.ceil(total / pageSize);
+    if (totalPages <= 1) return;
+
+    // 현재 블럭의 시작/끝 페이지
+    const blockStart = Math.floor((currentPage - 1) / blockSize) * blockSize + 1;
+    const blockEnd = Math.min(blockStart + blockSize - 1, totalPages);
+
+    // 이전 블럭 버튼
+    const prevLi = document.createElement('li');
+    prevLi.className = 'page-item' + (blockStart === 1 ? ' disabled' : '');
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'page-link';
+    prevBtn.textContent = '이전';
+    prevBtn.disabled = blockStart === 1;
+    prevBtn.onclick = () => loadPosts(blockStart - 1, currentSearch);
+    prevLi.appendChild(prevBtn);
+    pagUl.appendChild(prevLi);
+
+    // 페이지 번호
+    for (let i = blockStart; i <= blockEnd; i++) {
+        const li = document.createElement('li');
+        li.className = 'page-item' + (i === currentPage ? ' active' : '');
+        const btn = document.createElement('button');
+        btn.className = 'page-link';
+        btn.textContent = i;
+        btn.onclick = () => loadPosts(i, currentSearch);
+        li.appendChild(btn);
+        pagUl.appendChild(li);
+    }
+
+    // 다음 블럭 버튼
+    const nextLi = document.createElement('li');
+    nextLi.className = 'page-item' + (blockEnd === totalPages ? ' disabled' : '');
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'page-link';
+    nextBtn.textContent = '다음';
+    nextBtn.disabled = blockEnd === totalPages;
+    nextBtn.onclick = () => loadPosts(blockEnd + 1, currentSearch);
+    nextLi.appendChild(nextBtn);
+    pagUl.appendChild(nextLi);
+}
+document.getElementById('searchForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const search = document.getElementById('searchInput').value.trim();
+    loadPosts(1, search);
+});
+</script>
+{% endblock %}

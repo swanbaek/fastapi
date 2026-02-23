@@ -12,3 +12,6 @@ jinja2
 python-multipart
 itsdangerous
 cryptography 
+python-jose[cryptography] 
+passlib[bcrypt] 
+pydantic-settings

@@ -1,51 +1,35 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>회원목록</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    {% include 'navbar.html' %}
-    
-        {% if auth_message %}
-            <div id="authModal" class="modal auth-modal">
-                <div class="auth-modal-content">
-                    <h3 class="auth-modal-title">{{ auth_message }}</h3>
-                    <button class="auth-modal-btn" onclick="window.location.href='/'">홈으로 이동</button>
-                </div>
-            </div>
-        {% else %}
-            <div class="container">
-                <h2>회원목록</h2>
-                <table id="usersTable" class="users-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>이름</th>
-                            <th>이메일</th>
-                            <th>가입일</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- 회원 데이터가 JS로 채워집니다 -->
-                    </tbody>
-                </table>
-            </div>
-        {% endif %}
-    
-    <footer>
-        &copy; 2026 EduApp. All rights reserved.
-    </footer>
-    {% include 'login_modal.html' %}
+{% extends 'base.html' %}
+
+{% block title %}회원목록{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h2>회원목록</h2>
+        <table id="usersTable" class="users-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>이름</th>
+                    <th>이메일</th>
+                    <th>가입일</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 회원 데이터가 JS로 채워집니다 -->
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block script %}
+<script src="/static/common.js"></script>
     <script>
-        {% if not auth_message %}
-        async function fetchUsers() {
-            const res = await fetch('/users');
+    async function fetchUsers() {
+        const res = await apiFetch('/api/users');
+        const tbody = document.querySelector('#usersTable tbody');
+        tbody.innerHTML = '';
+        if (res.ok) {
             const users = await res.json();
-            const tbody = document.querySelector('#usersTable tbody');
-            tbody.innerHTML = '';
             users.forEach(user => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -56,9 +40,19 @@
                 `;
                 tbody.appendChild(tr);
             });
+        } else {
+            let msg = '회원목록을 볼 권한이 없습니다.';
+            if (res.status === 401) msg = '로그인 후 이용 가능합니다.';
+            if (res.status === 403) msg = '관리자만 볼 수 있습니다.';
+            try {
+                if (res.headers.get('content-type')?.includes('application/json')) {
+                    const err = await res.json();
+                    msg = err.detail || msg;
+                }
+            } catch (e) {}
+            tbody.innerHTML = `<tr><td colspan="4" style="color:red;text-align:center;">${msg}</td></tr>`;
         }
-        fetchUsers();
-        {% endif %}
+    }
+    fetchUsers();
     </script>
-</body>
-</html>
+{% endblock %}
