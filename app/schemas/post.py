@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 
+from app.schemas.comment_schema import CommentOut
 from app.schemas.user import UserOut
 
 class PostBase(BaseModel):
@@ -26,6 +27,8 @@ class PostOut(PostBase):
 	hit_count: int
 	file_url: Optional[str] = None
 	file_name: Optional[str] = None
+
+	comments: Optional[List[CommentOut]] = []
 
 	class Config:
 		#orm_mode = True

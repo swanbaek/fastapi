@@ -95,6 +95,7 @@ async function loadPosts(page, search = '') {
                         <span class="post-title-text">
                             ${(post.file_url && post.file_url.startsWith('/static/uploads/') && post.file_url.includes('.')) ? '<span title="첨부파일 있음" style="vertical-align:middle; margin-left:6px; font-size:18px;">📎</span>' : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'}
                             ${post.title}
+                            ${post.comments.length > 0 ? `<span style="display:inline-block; background:#aaa; color:#fff; border-radius:12px; font-size:12px; padding:1px 8px; margin-left:6px; vertical-align:middle;">${post.comments.length}</span>` : ''}
                         </span>
                     </td>
                     <td>${post.author && post.author.name ? post.author.name : '알 수 없음'}</td>
