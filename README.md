@@ -217,10 +217,16 @@ fetch /posts/?page=N&size=10&search=키워드
 ![게시글 검색](./4.png)
 
 ## DB 연동 방식
-- `.env` 파일 또는 환경변수에서 DB 접속 정보(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DB) 로드
-- `app/core/db.py`의 `get_connection()` 함수로 PyMySQL 커넥션 생성
-- SQL문 직접 작성 및 실행 (예: `SELECT`, `INSERT`, `UPDATE`, `DELETE`)
-- 트랜잭션/에러 발생 시 `conn.rollback()` 처리
+이 프로젝트는 **SQLAlchemy** ORM을 사용하여 데이터베이스와 연동합니다.
+
+1. `.env` 파일 또는 환경변수에서 DB 접속 정보(`DB_URL`)를 로드합니다.
+2. `app/core/database.py`에서 SQLAlchemy의 `create_engine`으로 DB 연결을 생성합니다.
+3. ORM 모델은 `app/models/` 폴더에서 정의하며, 테이블 구조를 파이썬 클래스로 관리합니다.
+4. 데이터베이스 작업은 SQLAlchemy의 `Session`을 통해 트랜잭션 단위로 처리합니다.
+5. CRUD 작업은 SQLAlchemy 쿼리문으로 수행하며, 직접 SQL문을 작성하지 않아도 됩니다.
+6. 트랜잭션/에러 발생 시 `session.rollback()`으로 처리합니다.
+
+자세한 SQLAlchemy 연동 및 사용법은 [sqlalchemy_guide.md](./sqlalchemy_guide.md) 파일을 참고하세요.
 
 ## 실행 방법
 1. 의존성 설치
