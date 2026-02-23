@@ -1,0 +1,567 @@
+.navbar .menu a {
+    margin-right: 18px;
+    text-decoration: none;
+    color: #222e50;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+.navbar .menu a:last-child {
+    margin-right: 0;
+}
+/* 게시글 목록 테이블 스타일 */
+.post-list {
+    max-width: 1200px;
+    margin: 60px auto 40px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(34,46,80,0.13);
+    padding: 36px 32px 32px 32px;
+}
+.post-header {
+    margin-bottom: 18px;
+}
+.post-table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    font-size: 15.5px;
+    box-shadow: 0 2px 8px rgba(34,46,80,0.06);
+    margin-bottom: 18px;
+    table-layout: fixed; /* 추가 */
+}
+.post-table th:nth-child(1) { width: 7%; }
+.post-table th:nth-child(2) { width: 48%; }
+.post-table th:nth-child(3) { width: 15%; }
+.post-table th:nth-child(4) { width: 15%; }
+.post-table th:nth-child(5) { width: 10%; }
+.post-table th, .post-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid #e3eafc;
+    text-align: center;
+}
+.post-table th {
+    background: #f6f8fc;
+    color: #222e50;
+    font-weight: 600;
+}
+.post-table tr {
+    transition: background 0.15s;
+    cursor: pointer;
+}
+.post-table tr:hover {
+    background: #f6f8fc;
+}
+.post-table .post-title {
+    text-align: left;
+    color: #222e50;
+    font-weight: 500;
+    padding-left: 12px;
+    font-size: 1rem;
+    max-width: 100%;
+    width: 100%;
+    margin-bottom: 8px;
+}
+/* ───────────────────────────────────────────
+    검색창 + 검색 버튼 정렬
+   ─────────────────────────────────────────── */
+.post-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100%;
+}
+
+#searchForm .input-group {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 6px !important;
+    width: 320px !important;
+}
+
+#searchInput .form-control {
+    flex: 1;
+    border-radius: 8px !important;
+    border: 1px solid #ccc !important;
+    font-size: 15px !important;
+}
+
+#searchForm .btn.btn-primary {
+    padding: 8px 18px !important;
+    border-radius: 8px !important;
+}
+
+/* ───────────────────────────────────────────
+    글목록·글쓰기 버튼
+   ─────────────────────────────────────────── */
+.btn-wide {
+    padding: 8px 20px !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+}
+
+/* 페이지네이션 */
+.pagination .page-item .page-link {
+    padding: 8px 14px;
+    font-size: 15px;
+    border-radius: 6px;
+    margin: 0 3px;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.pagination .page-item.disabled .page-link {
+    background-color: #e9ecef;
+    border-color: #e9ecef;
+    color: #999;
+}
+
+
+.post-title-text {
+    display: block;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.post-actions {
+    display: flex !important;
+    align-items: center !important;  /* 이것도 중요! */
+    gap: 12px !important;
+    margin-bottom: 18px !important;
+    flex-wrap: wrap !important;
+}
+
+.post-actions form {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.post-image-preview {
+    text-align: center;
+    margin-bottom: 18px;
+}
+.post-image-view {
+    max-width: 100%;
+    max-height: 340px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(34,46,80,0.10);
+    margin-bottom: 8px;
+}
+/* 게시글 상세 카드 스타일 */
+.post-detail-card {
+    max-width: 700px;
+    margin: 60px auto 40px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(34,46,80,0.13);
+    padding: 36px 32px 32px 32px;
+    min-height: 60vh;
+}
+.post-detail-header {
+    margin-bottom: 18px;
+}
+
+.post-meta {
+    display: flex;
+    gap: 18px;
+    font-size: 1.02rem;
+    color: #6b7a99;
+    margin-bottom: 6px;
+    align-items: center;
+}
+.post-meta i {
+    margin-right: 4px;
+    color: #bfc8e6;
+}
+.post-divider {
+    border: none;
+    border-top: 1.5px solid #e3eafc;
+    margin: 12px 0 18px 0;
+}
+.post-content {
+    font-size: 1.13rem;
+    color: #222e50;
+    line-height: 1.7;
+    margin-bottom: 18px;
+}
+.post-file {
+    margin-bottom: 18px;
+}
+.post-file a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: 500;
+    font-size: 1.02rem;
+}
+.comments {
+    margin-top: 32px;
+    background: #f6f8fc;
+    border-radius: 8px;
+    padding: 18px 16px 10px 16px;
+}
+.comments h3 {
+    margin-top: 0;
+    color: #222e50;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+}
+/* Ensure JS can always hide the 글쓰기 button, even with .btn-wide's !important */
+#writeBtn[style*="display: none"] {
+    display: none !important;
+}
+
+.comment {
+    border-bottom: 1px solid #e3eafc;
+    padding: 8px 0 8px 0;
+    margin-bottom: 8px;
+}
+.comment:last-child {
+    border-bottom: none;
+}
+.comment-author {
+    font-weight: 600;
+    color: #007bff;
+    margin-right: 8px;
+}
+.comment-date {
+    color: #6b7a99;
+    font-size: 0.97rem;
+    margin-right: 8px;
+}
+.btn {
+    display: inline-block;
+    padding: 7px 18px;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+    border: none;
+    cursor: pointer;
+}
+.btn-primary {
+    background: #007bff;
+    color: #fff;
+}
+.btn-primary:hover {
+    background: #0056b3;
+}
+.btn-secondary {
+    background: #bfc8e6;
+    color: #222e50;
+}
+.btn-secondary:hover {
+    background: #222e50;
+    color: #fff;
+}
+.btn-warning {
+    background: #ffb400;
+    color: #222e50;
+}
+.btn-warning:hover {
+    background: #ffd966;
+    color: #222e50;
+}
+.btn-danger {
+    background: #e74c3c;
+    color: #fff;
+}
+.btn-danger:hover {
+    background: #c0392b;
+}
+.btn-light {
+    background: #f6f8fc;
+    color: #222e50;
+    border: 1px solid #bfc8e6;
+}
+.btn-light:hover {
+    background: #e3eafc;
+}
+.btn-wide {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 40px !important;
+    padding: 10px 20px !important;  /* 이미 있음 */
+    box-sizing: border-box !important;
+    font-family: inherit !important;
+    line-height: 1.5 !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    border: none !important;
+    cursor: pointer !important;
+    border-radius: 4px !important;
+    font-size: 14px !important;
+    transition: all 0.3s ease !important;
+}
+/* # 게시글 작성/수정 폼 스타일 */
+.post-form textarea {
+    width: 100%;
+    min-height: 180px;
+    padding: 0.9rem 0.7rem;
+    border-radius: 4px;
+    border: 1.5px solid #bfc9d1;
+    margin-top: 0.3rem;
+    font-size: 1.08rem;
+    font-family: inherit;
+    resize: vertical;
+    background: #fafdff;
+    transition: border 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+.post-form textarea:focus {
+    outline: none;
+    border: 1.5px solid #007bff;
+    box-shadow: 0 0 0 2px #e3f0ff;
+    background: #fff;
+}
+
+/* CSS 파일에 추가 */
+
+.inline-form {
+    margin: 0;
+    padding: 0;
+    flex: 1;
+}
+
+.comments textarea {
+    width: 100%;
+    min-height: 60px;
+    padding: 0.9rem 0.7rem;
+    border-radius: 4px;
+    border: 1.5px solid #bfc9d1;
+    margin-top: 0.3rem;
+    font-size: 1.08rem;
+    font-family: inherit;
+    resize: vertical;
+    background: #fafdff;
+    transition: border 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+.comments textarea:focus {
+    outline: none;
+    border: 1.5px solid #007bff;
+    box-shadow: 0 0 0 2px #e3f0ff;
+    background: #fff;
+}
+
+/* # 회원목록 테이블 스타일 */
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto 24px auto;
+    background: #fff;
+    font-size: 15px;
+    box-shadow: 0 2px 8px rgba(34,46,80,0.06);
+}
+.users-table th {
+    background: #f6f8fc;
+    padding: 8px;
+    border-bottom: 1px solid #bfc8e6;
+    color: #222e50;
+    font-weight: 600;
+}
+.users-table td {
+    padding: 8px;
+    border-bottom: 1px solid #e3eafc;
+    text-align: center;
+    color: #222e50;
+}
+
+/* 인증 필요 모달 */
+.auth-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.4);
+    z-index: 2000;
+}
+.auth-modal-content {
+    background: #fff;
+    padding: 32px 24px;
+    border-radius: 10px;
+    box-shadow: 0 2px 16px rgba(34,46,80,0.15);
+    min-width: 320px;
+    max-width: 90vw;
+    text-align: center;
+}
+.auth-modal-title {
+    color: #222e50;
+    margin-bottom: 18px;
+    font-size: 20px;
+}
+.auth-modal-btn {
+    padding: 10px 24px;
+    background: #222e50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+.auth-modal-btn:hover {
+    background: #ffb400;
+    color: #222e50;
+}
+.login-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+    color: #ffeb3b;
+    font-weight: bold;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.18);
+    height: 60px;
+    min-width: 120px;
+    padding: 20px 0;
+    line-height: 20px;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #e3eafc 0%, #f9f9f9 100%);
+    margin: 0;
+    box-sizing: border-box;
+    min-height: 100vh;
+}
+.navbar {
+    background: #222e50;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(34,46,80,0.08);
+}
+.navbar .menu {
+    display: flex;
+    gap: 28px;
+    margin-left: 36px;
+        align-items: stretch;
+}
+.navbar .menu a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 20px 0;
+    font-size: 17px;
+    transition: color 0.2s;
+        height: 60px;
+        line-height: 20px;
+        box-sizing: border-box;
+}
+.navbar .menu a:hover {
+    color: #ffb400;
+}
+.navbar .logo {
+    font-size: 1em;
+    font-weight: bold;
+    margin-right: 36px;
+    letter-spacing: 1px;
+}
+.main{
+    width:80%;
+    max-width: 1200px;
+    margin:auto;
+    /* background-color: #ccc; */
+    padding: 1em;
+    min-height: 88vh;
+}
+
+footer {
+    background: #222e50;
+    color: #fff;
+    box-sizing: border-box;
+    margin-bottom: 14px;
+    text-align: center;
+    padding: 18px 0 12px 0;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    font-size: 15px;
+    box-shadow: 0 -2px 8px rgba(34,46,80,0.08);
+}
+.container {
+    max-width: 600px;
+    min-height: 60vh;
+    margin: 60px auto;
+    background: #fff;
+    box-sizing: border-box;
+    padding: 32px 24px;
+    border-radius: 10px;
+    box-shadow: 0 2px 16px rgba(34,46,80,0.10);
+}
+h2 {
+    text-align: center;
+    margin-bottom: 24px;
+    color: #222e50;
+}
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #222e50;
+}
+input[type="text"], input[type="email"], input[type="password"] {
+    width: 100%;
+    max-width: 100%;
+    padding: 7px 12px;
+    height: 46px;
+    border: 1px solid #bfc8e6;
+    border-radius: 5px;
+    font-size: 15px;
+    background: #f6f8fc;
+    box-sizing: border-box;
+}
+button {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px 0;
+    margin-top: 1em;
+    background: #222e50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 17px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+    box-sizing: border-box;
+}
+button:hover {
+    background: #ffb400;
+    color: #222e50;
+}
+.result {
+    margin-top: 18px;
+    text-align: center;
+    color: #222e50;
+    font-weight: 500;
+}
+#signupForm{
+    /* removed for unified form width */
+}
+#usersTable{
+    margin:auto;
+    width:90%; 
+    border-collapse:collapse;
+}
+#usersTable td{
+    text-align: center;
+    
+}
