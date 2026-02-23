@@ -93,12 +93,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
                 }
             });
-
-            // 댓글 작성 폼
-            commentFormArea.innerHTML = `
-                <textarea id="commentContent" placeholder="댓글을 입력하세요" style="margin-top:12px;"></textarea>
+            if (payload && payload.id) {
+                commentFormArea.innerHTML = `
+                <div style="margin-top:12px; margin-bottom:6px; font-weight:600; color:#222e50;">
+                    ${payload.name} 님, 댓글을 작성해보세요!
+                </div>
+                <textarea id="commentContent" placeholder="댓글을 입력하세요"></textarea>
                 <button onclick="submitComment()" class="btn btn-primary" style="margin-top:8px;">댓글 작성</button>
             `;
+            }
         }
     }
 });
