@@ -34,7 +34,7 @@
         <input type="password" id="deletePassword" required>
     </div>
 
-    <button id="deleteBtn" style="background:#e53935;margin-top:20px;">
+    <button id="deleteBtn" class="btn" style="background:#e53935;margin-top:20px;color:#fff;">
         회원탈퇴
     </button>
 
@@ -47,8 +47,7 @@
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
     // 1. 회원정보 로드
-    const res = await apiFetch("/users/me");
-    
+    const res = await apiFetch("/api/users/me");    
     if (res.ok) {
         
         const user = await res.json();
@@ -76,7 +75,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         };
         const pw = document.getElementById("password").value;
         if (pw) body.password = pw;
-        const update = await apiFetch("/users/me", {
+        const update = await apiFetch("/api/users/me", {
             method: "PUT",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(body)
@@ -99,7 +98,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const password = document.getElementById("deletePassword").value;
         if (!password) return alert("비밀번호를 입력하세요.");
 
-        const delRes = await apiFetch("/users/me", {
+        const delRes = await apiFetch("/api/users/me", {
             method: "DELETE",
             headers: {
                 "X-Password": password  
@@ -114,7 +113,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             localStorage.removeItem("refreshToken");
             location.href = "/";
         } else {
-             let errMsg = "알 수 없는 오류";
+            let errMsg = "알 수 없는 오류";
     try {
         if (delRes.headers.get("content-type")?.includes("application/json")) {
             const err = await delRes.json();
