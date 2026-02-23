@@ -14,6 +14,7 @@
 - **Post글 CRUD기능** : 글수정,삭제는 JWT 토큰이 있는 경우만 가능
 - **Comment글 CRUD기능** : 댓글 수정,삭제는 JWT 토큰이 있는 경우만 가능
 
+
 ## 기술 스택
 - Python 3.9+
 - FastAPI
