@@ -33,18 +33,26 @@
         </div>
         {% endif %}
     </div>
-        <div class="post-actions">
-            <span id="editDeleteArea"></span>
-            <a href="/posts/list" class="btn btn-light btn-wide">목록으로</a>
-        </div>
+    <div class="post-actions">
+        <span id="editDeleteArea"></span>
+        <a href="/posts/list" class="btn btn-light btn-wide">목록으로</a>
+    </div>
 
     <div class="comments">
-        <h3>댓글 <span style="display:inline-block; background:#d60c1d; color:#fff; border-radius:12px; font-size:13px; padding:2px 10px; vertical-align:middle; font-weight:600;">{{ post.comments|length }}</span></h3>
+        <h3>댓글 <span style="display:inline-block; background:#0d6efd; color:#fff; border-radius:12px; font-size:13px; padding:2px 10px; vertical-align:middle; font-weight:600;">{{ post.comments|length }}</span></h3>
         {% for comment in post.comments %}
-        <div class="comment">
-            <span class="comment-author">{{ comment.author.name if comment.author else '익명' }}</span>
-            <span class="comment-date">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') if comment.created_at else '' }}</span>
-            <p>{{ comment.content }}</p>
+        <div class="comment" id="comment-{{ comment.id }}">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <span class="comment-author">{{ comment.author.name if comment.author else '익명' }}</span>
+                    <span class="comment-date">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') if comment.created_at else '' }}</span>
+                </div>
+                <div class="comment-actions" id="comment-actions-{{ comment.id }}"
+                     data-comment-id="{{ comment.id }}"
+                     data-user-id="{{ comment.author.id if comment.author else 0 }}">
+                </div>
+            </div>
+            <p class="comment-content" id="comment-content-{{ comment.id }}">{{ comment.content }}</p>
         </div>
         {% endfor %}
         <span id="commentFormArea"></span>
@@ -56,36 +64,46 @@
 {% block script %}
 <script src="/static/common.js"></script>
 <script>
-// 수정/삭제 버튼 동적 생성
 document.addEventListener('DOMContentLoaded', function() {
     const accessToken = localStorage.getItem('accessToken');
     const editDeleteArea = document.getElementById('editDeleteArea');
     const commentFormArea = document.getElementById('commentFormArea');
-    // post.user_id는 템플릿에서 window.postUserId로 전달
     const postUserId = {{ post.author.id }};
+
     if (accessToken && typeof parseJwt === 'function') {
         const payload = parseJwt(accessToken);
-        // 수정 버튼을 apiFetch 쓰는 방식으로 변경
-    if (payload && payload.id && payload.id === postUserId) {
-        editDeleteArea.innerHTML = `
-            <a href="javascript:void(0)" onclick="goEdit({{ post.id }})" class="btn btn-warning btn-wide">수정</a>
-            <a href="javascript:void(0)" onclick="deletePost({{ post.id }})" class="btn btn-danger btn-wide">삭제</a>
-        `;
-    }
-        // 댓글 작성 폼 노출 (로그인한 경우)
+
+        // 게시글 수정/삭제 버튼
+        if (payload && payload.id && payload.id === postUserId) {
+            editDeleteArea.innerHTML = `
+                <a href="javascript:void(0)" onclick="goEdit({{ post.id }})" class="btn btn-warning btn-wide">수정</a>
+                <a href="javascript:void(0)" onclick="deletePost({{ post.id }})" class="btn btn-danger btn-wide">삭제</a>
+            `;
+        }
+
+        // 댓글 수정/삭제 버튼 - 본인 댓글에만 표시
         if (payload && payload.id) {
+            document.querySelectorAll('.comment-actions').forEach(el => {
+                const commentId = el.dataset.commentId;
+                const commentUserId = parseInt(el.dataset.userId);
+                if (payload.id === commentUserId) {
+                    el.innerHTML = `
+                        <button onclick="editComment(${commentId})" class="btn btn-warning" style="padding:3px 10px; font-size:13px;">수정</button>
+                        <button onclick="deleteComment(${commentId})" class="btn btn-danger" style="padding:3px 10px; font-size:13px;">삭제</button>
+                    `;
+                }
+            });
+
+            // 댓글 작성 폼
             commentFormArea.innerHTML = `
-                <div style="margin-top:12px; margin-bottom:6px; font-weight:600; color:#222e50;">
-                ${payload.name} 님, 댓글을 작성해보세요!
-                </div>
                 <textarea id="commentContent" placeholder="댓글을 입력하세요" style="margin-top:12px;"></textarea>
                 <button onclick="submitComment()" class="btn btn-primary" style="margin-top:8px;">댓글 작성</button>
             `;
         }
     }
-}
-);
+});
 
+// 댓글 작성
 async function submitComment() {
     const content = document.getElementById('commentContent').value.trim();
     if (!content) {
@@ -104,18 +122,72 @@ async function submitComment() {
     }
 }
 
+// 댓글 수정 - 인라인 편집
+function editComment(commentId) {
+    const contentEl = document.getElementById(`comment-content-${commentId}`);
+    const originalContent = contentEl.textContent.trim();
+    const actionsEl = document.getElementById(`comment-actions-${commentId}`);
+
+    contentEl.innerHTML = `
+        <textarea id="edit-textarea-${commentId}" style="width:100%; margin-top:6px;">${originalContent}</textarea>
+    `;
+    actionsEl.innerHTML = `
+        <button onclick="submitEditComment(${commentId})" class="btn btn-primary" style="padding:3px 10px; font-size:13px;">저장</button>
+        <button onclick="cancelEditComment(${commentId}, \`${originalContent}\`)" class="btn btn-light" style="padding:3px 10px; font-size:13px;">취소</button>
+    `;
+}
+
+// 댓글 수정 취소
+function cancelEditComment(commentId, originalContent) {
+    const contentEl = document.getElementById(`comment-content-${commentId}`);
+    const actionsEl = document.getElementById(`comment-actions-${commentId}`);
+    contentEl.innerHTML = originalContent;
+    actionsEl.innerHTML = `
+        <button onclick="editComment(${commentId})" class="btn btn-warning" style="padding:3px 10px; font-size:13px;">수정</button>
+        <button onclick="deleteComment(${commentId})" class="btn btn-danger" style="padding:3px 10px; font-size:13px;">삭제</button>
+    `;
+}
+
+// 댓글 수정 저장
+async function submitEditComment(commentId) {
+    const content = document.getElementById(`edit-textarea-${commentId}`).value.trim();
+    if (!content) {
+        alert('댓글 내용을 입력해주세요.');
+        return;
+    }
+    const res = await apiFetch(`/comments/${commentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content })
+    });
+    if (res.ok) {
+        location.reload();
+    } else {
+        alert('댓글 수정 실패');
+    }
+}
+
+// 댓글 삭제
+async function deleteComment(commentId) {
+    if (!confirm('댓글을 삭제하시겠습니까?')) return;
+    const res = await apiFetch(`/comments/${commentId}`, {
+        method: 'DELETE'
+    });
+    if (res.ok) {
+        location.reload();
+    } else {
+        alert('댓글 삭제 실패');
+    }
+}
+
 function goEdit(postId) {
     window.location.href = `/posts/${postId}/edit`;
 }
-// 게시글 삭제: 본인 글만 삭제 가능 (서버에서 한 번 더 권한 검증)
+
 async function deletePost(postId) {
-    if (!confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
-        return;
-    }
+    if (!confirm('정말로 이 게시글을 삭제하시겠습니까?')) return;
     try {
-        const response = await apiFetch(`/posts/${postId}/delete`, {
-            method: 'POST'
-        });
+        const response = await apiFetch(`/posts/${postId}/delete`, { method: 'POST' });
         if (response.ok) {
             alert('게시글이 삭제되었습니다.');
             window.location.href = '/posts/list';
