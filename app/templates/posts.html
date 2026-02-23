@@ -15,6 +15,8 @@
             <span id="writeBtnArea"></span>
         </div>
     </div>
+    <!-- 총 게시글 수 or 검색한 게시글 수 출력 -->
+    <div id="postSummary" style="margin-bottom:10px; font-size:14px; color:#6b7a99;"></div>
     <table class="post-table">
         <thead>
             <tr>
@@ -71,6 +73,15 @@ async function loadPosts(page, search = '') {
         const data = await res.json();
         const posts = data.posts;
         const total = data.total;
+
+        // 검색결과 / 총 게시글 수 표시
+        const summary = document.getElementById('postSummary');
+        if (search) {
+            summary.textContent = `"${search}" 검색결과 ${total}건`;
+        } else {
+            summary.textContent = `전체 ${total}건`;
+        }
+
         if (posts.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">게시글이 없습니다.</td></tr>';
         } else {
