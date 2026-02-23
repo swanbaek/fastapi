@@ -3,6 +3,8 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 
+from app.schemas.user import UserOut
+
 class PostBase(BaseModel):
 	title: str
 	content: str
@@ -18,6 +20,7 @@ class PostUpdate(PostBase):
 class PostOut(PostBase):
 	id: int
 	user_id: int
+	author: Optional[UserOut] = None  # 추가
 	created_at: datetime
 	updated_at: Optional[datetime] = None
 	hit_count: int

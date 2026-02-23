@@ -13,14 +13,13 @@ from app.api.members import router as members_router
 from starlette.middleware.sessions import SessionMiddleware
 
 # SQLAlchemy 모델 import 및 테이블 생성
-from app.models.post import Post
 from app.core.database import engine
 from app.models.post import Base
-from app.services import user_service
+
 
 
 Base.metadata.create_all(bind=engine)
-
+#SQLAlchemy 모델의 테이블을 데이터베이스에 자동으로 생성하는 명령. 
 
 app = FastAPI()
 
