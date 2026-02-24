@@ -42,7 +42,7 @@ def get_current_user_optional(request: Request):
 #Node.js의 verifyAccessToken 미들웨어 대응.
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer
-from jose import jwt, JWTError
+from jose import ExpiredSignatureError, jwt, JWTError
 from app.core.config import settings
 
 bearer = HTTPBearer()
@@ -60,7 +60,11 @@ def get_current_user_jwt(token: str = Depends(bearer)):
         if not user_id:
             raise HTTPException(status_code=401, detail="토큰에 user_id가 없습니다.")
         return {"id": user_id, "role": role}
+    except ExpiredSignatureError:
+        # 만료된 토큰 → 401로 구분하여 클라이언트에게 알림
+        raise HTTPException(status_code=401, detail="토큰이 만료되었습니다.")
     except JWTError:
+        # 위변조 등 유효하지 않은 토큰 → 403으로 구분하여 클라이언트에게 알림
         raise HTTPException(status_code=403, detail="유효하지 않은 토큰입니다.")
 
 
