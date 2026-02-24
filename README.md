@@ -89,7 +89,7 @@ app/
 | GET    | /posts/list               | 게시글 목록 페이지(HTML, JWT 필요시 JS로 제어) |
 | GET    | /posts                    | 게시글 목록(JSON)                    |
 | GET    | /posts/new                | 게시글 작성 폼(HTML, JWT 필요시 JS로 제어) |
-| POST   | /posts/new                | 게시글 작성(폼 제출, JWT 필요, Authorization 헤더) |
+| POST   | /posts                    | 게시글 작성(폼 제출, JWT 필요, Authorization 헤더) |
 | GET    | /posts/{post_id}          | 게시글 상세(HTML, JWT 필요시 JS로 제어) |
 | GET    | /posts/{post_id}/edit     | 게시글 수정 폼(HTML, 본인만, JS로 제어) |
 | POST   | /posts/{post_id}/edit     | 게시글 수정(폼 제출, JWT 필요, 본인만) |
