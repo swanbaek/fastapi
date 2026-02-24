@@ -20,7 +20,8 @@ def list_posts(db: Session):
 # service
 def list_posts_paging(db: Session, page: int = 1, size: int = 10, search: str = ""):
     total, posts = post_crud.get_posts_paging(db, page=page, size=size, search=search)
-    return {"total": total, "posts": posts}
+    total_pages = (total + size - 1) // size if size else 1
+    return {"total": total, "total_pages": total_pages, "posts": posts}
 
 # 게시글 상세 조회 및 조회수 증가
 def get_post_detail(db: Session, post_id: int):

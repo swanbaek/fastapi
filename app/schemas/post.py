@@ -36,6 +36,7 @@ class PostOut(PostBase):
 
 # 게시글 목록 조회 시, 총 게시글 수와 함께 반환할 모델
 class PostListOut(BaseModel):
-    total: int
-    posts: List[PostOut]
+	total: int
+	total_pages: int
+	posts: List[PostOut]
 
