@@ -8,13 +8,19 @@ class UserBase(BaseModel):
     # EmailStr 사용해서 이메일 자동 검증
     #  UserBase에 공통 필드만 정의
 
+# 로그아웃시 email을 보냄. 또는 이메일 중복체크시에도 활용가능 
+class EmailRequest(BaseModel):
+    email: str
+
 class UserCreate(UserBase):
     password: str
+    role: Optional[str] = None
 
 class UserUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[EmailStr] = None
     password: Optional[str] = None
+    role: Optional[str] = None
     # 유저 정보 수정시엔 선택적 업데이트를 하도록 Optional로 줌
 
 class UserOut(UserBase):

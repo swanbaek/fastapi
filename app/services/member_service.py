@@ -19,14 +19,14 @@ def service_get_member(db, member_id: int):
         raise HTTPException(404, "Member not found")
     return member
 
-def service_create_member(db, name, email, password):
+def service_create_member(db, name, email, password, role=None):
     if get_member_by_email(db, email):
         raise HTTPException(400, "이미 등록된 이메일입니다.")
     if len(password.encode("utf-8")) > 72:
         raise HTTPException(400, "비밀번호는 72바이트(약 72자) 이하로 입력하세요.")
     hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
     now = datetime.now()
-    member_id = create_member(db, name, email, hashed_pw, now)
+    member_id = create_member(db, name, email, hashed_pw, now, role)
     return {"result": "success", "message": "회원가입이 완료되었습니다."}
 
 def service_update_my_info(db, member_id: int, name=None, email=None, password=None):

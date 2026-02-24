@@ -5,6 +5,7 @@ from app.core.jwt_handler import create_access_token, create_refresh_token
 from app.core.database import get_db
 from app.models.member import Member
 from app.core.config import settings
+from app.schemas.user import EmailRequest
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -41,20 +42,21 @@ from fastapi import Body
 @router.post("/login")
 def login(
     email: str = Body(...),
-    password: str = Body(...),
+    passwd: str = Body(...),
     db: Session = Depends(get_db)
 ):
     user = db.query(Member).filter(Member.email == email).first()
     if not user:
         raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 틀렸습니다.")
 
-    if not pwd_context.verify(password, user.password):
+    if not pwd_context.verify(passwd, user.password):
         raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 틀렸습니다.")
 
     payload = {
         "id": user.id,
         "name": user.name,
         "email": user.email,
+        "role": user.role,
     }
 
     access_token = create_access_token(payload)
@@ -103,8 +105,9 @@ def refresh_token(body: RefreshRequest, db: Session = Depends(get_db)):
 
 # 7. 로그아웃 API (RefreshToken 제거)
 @router.post("/logout")
-def logout(email: str, db: Session = Depends(get_db)):
-    user = db.query(Member).filter(Member.email == email).first()
+def logout(emailReq: EmailRequest, db: Session = Depends(get_db)):
+    print(">> logout() email:", emailReq)  # 디버깅용 출력
+    user = db.query(Member).filter(Member.email == emailReq.email).first()
     if not user:
         raise HTTPException(status_code=400, detail="잘못된 요청입니다")
 

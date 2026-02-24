@@ -21,10 +21,16 @@ def list_members(user=Depends(get_current_user_jwt), db: Session = Depends(get_d
 def create_user(
 	name: str = Body(...),
 	email: str = Body(...),
-	password: str = Body(...),
+	passwd: str = Body(...),
+	role: str = Body(None),
 	db: Session = Depends(get_db)
 ):
-	return member_service.service_create_member(db, name, email, password)
+	print("[DEBUG] name:", name)
+	print("[DEBUG] email:", email)
+	print("[DEBUG] passwd:", passwd)
+	print("[DEBUG] role:", role)
+	password = passwd
+	return member_service.service_create_member(db, name, email, password, role)
 
 # 내 정보 조회 (GET /users/me)
 @router.get("/users/me")

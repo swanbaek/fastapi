@@ -11,6 +11,8 @@ def get_member_by_email(db: Session, email: str):
     return db.query(Member).filter(Member.email == email).first()
 
 def create_member(db: Session, name, email, hashed_pw, created_at, role=None):
+    if role is None:
+        role = 'user'
     member = Member(
         name=name,
         email=email,
