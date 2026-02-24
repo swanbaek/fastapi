@@ -39,7 +39,8 @@ def list_posts(
 def new_post_form(request: Request):
     return templates.TemplateResponse("post_form.html", {"request": request})
 
-@router.post("/new")
+#@router.post("/new")
+@router.post("/") #리액트 연동시에는 글쓰기를 /posts로 보냄
 def create_post(
     request: Request,
     title: str = Form(...),
