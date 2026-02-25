@@ -10,7 +10,7 @@ from app.core.database import engine
 from app.models.post import Base
 from app.models import post, comment, member
 
-from app.api import comments, posts
+from app.api import comments, posts, post_api
 from app.api.members import router as members_router
 from app.api.auth import router as auth_router
 
@@ -63,7 +63,8 @@ async def user_list_page(request: Request):
 
 
 # ------- API Routes -------
-app.include_router(posts.router)
+# app.include_router(posts.router)
 app.include_router(comments.router)
 app.include_router(auth_router)
 app.include_router(members_router, prefix="/api")
+app.include_router(post_api.router)
