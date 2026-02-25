@@ -193,8 +193,8 @@ logout()              // 로그아웃 시 상태 초기화
 
 ```bash
 cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+python -m venv .venv
+source .venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 7777
 ```
@@ -239,8 +239,14 @@ VITE_API_BASE_URL=http://localhost:7777
 # 1. 백엔드 실행
 cd backend && uvicorn app.main:app --reload --port 7777
 
+또는 (Windows의 경우)
+cd backend; uvicorn app.main:app --reload --port 7777
+
 # 2. 프론트엔드 실행
 cd frontend && npm run dev
+
+또는 (Windows의 경우)
+cd frontend; npm run dev
 ```
 
 브라우저에서 `http://localhost:5173` 접속
