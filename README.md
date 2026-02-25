@@ -8,7 +8,7 @@ JWT 인증 기반의 로그인/회원가입, 게시글 CRUD, 파일 업로드 �
 ## 📁 프로젝트 구조
 
 ```
-project/
+fastapi/
 ├── backend/               # FastAPI 백엔드
 │   ├── app/
 │   │   ├── core/          # DB 설정 등 핵심 설정
