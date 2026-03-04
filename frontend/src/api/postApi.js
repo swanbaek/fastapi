@@ -14,15 +14,11 @@ export const apiCreatePost = async (data) => {
     });
     return response.data;
 };
-//--- post 글쓰기 (파일 업로드하는 경우) method:post, enctype="multipart/form-data"---------------
+//multipart/form-data는 axios가 자동으로 boundary 포함해서 넣어주므로
+//지정할 필요없음. 그래서 아래처럼 간단히 작성해도 됨.
 export const apiCreatePostFileUp = async (data) => {
     //인증받은 사용자만 글쓰기 가능하므로 axiosAuthInstance 사용
-    const response = await axiosAuthInstance.post(`${baseUrl}/posts`, data, {
-        headers: {
-            'Content-Type': 'multipart/form-data', //파일업로드시 multipart/form-data로 전송해야 함
-        },
-    });
-    return response.data;
+    return await axiosAuthInstance.post(`${baseUrl}/posts`, data);
 };
 //--- post 목록 가져오기 ------------------------------
 export const apiFetchPostList = async (page = 1, size = 3, query = undefined) => {
