@@ -1,6 +1,6 @@
 //postApi.js
 import axios from 'axios';
-let baseUrl = `http://localhost:7777`;
+let baseUrl = ``; 
 import axiosInstance from './axiosInstance';
 import axiosAuthInstance from './axiosAuthInstance';
 
