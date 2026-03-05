@@ -97,7 +97,7 @@ export default function PostView() {
                             <hr />
                             <div style={{ marginBottom: '1rem' }} className="text-center">
                                 <img
-                                    src={`http://localhost:7777${post.file_url ?? '/static/uploads/noimage.png'}`}
+                                    src={`http://myswan.shop${post.file_url ?? '/static/uploads/noimage.png'}`}
                                     alt={`${post.file_url ?? 'noimage'}`}
                                     style={{ maxWidth: '70%', borderRadius: '0.5rem' }}
                                 />

@@ -129,7 +129,7 @@ export default function PostEdit() {
                             {formData.file_url && (
                                 <div className="my-2 text-muted">
                                     <img
-                                        src={`http://localhost:7777${formData.file_url}`}
+                                        src={`http://myswan.shop${formData.file_url}`}
                                         alt={formData.file}
                                         style={{ width: '150px' }}
                                         className="img-thumbnail"
