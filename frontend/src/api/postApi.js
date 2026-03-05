@@ -24,8 +24,11 @@ export const apiCreatePostFileUp = async (data) => {
 export const apiFetchPostList = async (page = 1, size = 3, query = undefined) => {
     console.log('page=====', page);
     //alert(page);
-    const response = await axiosInstance.get(`/posts`, { params: { page, size, query } });
+    //const response = await axiosInstance.get(`/posts`, { params: { page, size, query } });
                                     // `/posts?page=${page}&size=${size}&query=${query}`
+                                    //fastapi에서 /posts/로 라우팅하고 있어 수정하자. 검색어는 search로 전달
+    // 수정 후
+    const response = await axiosInstance.get(`/posts/`, { params: { page, size, search: query } });                                
     //alert('목록 가져오기 성공: ' + JSON.stringify(response.data));                                    
     return response.data;
 };

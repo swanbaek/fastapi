@@ -7,6 +7,7 @@ import { checkTokenExpiration, refreshAccessToken } from '../utils/authUtils';
 
 const axiosAuthInstance = axios.create({
     baseURL: ``, // 프록시 설정으로 baseURL 제거
+    //baseURL: `https://myswan.shop`, //https설정시 문제 발생하면 이걸로 변경
     //headers: { //이거 제거해야 함 파일 업로드시에는 multipart/form-data로 전송해야 하는데, Content-Type을 application/json으로 고정하면 안됨
     //    'Content-Type': 'application/json',
     //},
