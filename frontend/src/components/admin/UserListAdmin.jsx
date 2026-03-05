@@ -10,8 +10,10 @@ const UserListAdmin = () => {
     const authUser = useAuthStore((s) => s.authUser);
     const navigate = useNavigate();
     useEffect(() => {
-        if (!authUser || authUser.role?.toUpperCase !== 'ADMIN') {
+        if (!authUser || authUser.role?.toUpperCase() !== 'ADMIN') {
+            console.log('authUser: ', authUser);
             alert('관리자로 로그인해야 이용 가능해요');
+
             navigate('/');
         } else {
             getAllUser();
