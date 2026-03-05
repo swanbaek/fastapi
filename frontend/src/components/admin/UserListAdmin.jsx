@@ -10,7 +10,7 @@ const UserListAdmin = () => {
     const authUser = useAuthStore((s) => s.authUser);
     const navigate = useNavigate();
     useEffect(() => {
-        if (!authUser || authUser.role !== 'ADMIN') {
+        if (!authUser || authUser.role?.toUpperCase !== 'ADMIN') {
             alert('관리자로 로그인해야 이용 가능해요');
             navigate('/');
         } else {
@@ -20,7 +20,7 @@ const UserListAdmin = () => {
 
     const getAllUser = async () => {
         try {
-            const url = `http://localhost:7777/api/admin/users`;
+            const url = `/api/users`;
             const response = await axiosAuthInstance.get(url);
             //alert(JSON.stringify(response));
             setUsers(response.data);
@@ -31,11 +31,11 @@ const UserListAdmin = () => {
     };
 
     const getBgClass = (role) => {
-        if (role === 'ADMIN') return 'table-info';
+        if (role?.toUpperCase() === 'ADMIN') return 'table-info';
         else return 'table-light';
     };
 
-    if (!authUser || authUser.role !== 'ADMIN') {
+    if (!authUser || authUser.role?.toUpperCase() !== 'ADMIN') {
         return (
             <div className="alert alert-danger">
                 <h3>관리자 전용 페이지 입니다</h3>
