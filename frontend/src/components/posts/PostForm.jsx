@@ -30,7 +30,7 @@ export default function PostForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            if (!authUser || !formData.name) {
+            if (!authUser) {
                 alert('로그인해야 이용 가능합니다');
                 return;
             }
@@ -39,7 +39,7 @@ export default function PostForm() {
             //---------------------
             //파일업로드 하는 경우==> FormData객체에 데이터를 담아서 전송해야 한다
             const data = new FormData();
-            data.append('name', formData.name);
+            //data.append('name', formData.name);
             data.append('title', formData.title);
             data.append('content', formData.content);
             if (formData.file) {

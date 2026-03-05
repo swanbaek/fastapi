@@ -48,14 +48,14 @@ export default function PostList() {
                         <div style={{ width: '30%' }} className="text-center">
                             {post.file_url ? (
                                 <img
-                                src={`http://localhost:7777${post.file_url}`}
+                                src={`http://myswan.shop/static/uploads/${post.file_name}`}
                                 alt={post.file_name}
                                 style={{ width: '90%' }}
                                 className="img-thumbnail"
                             />
                             ) : (
                                 <img
-                                    src={`http://localhost:7777/static/uploads/noimage.png`}
+                                    src={`http://myswan.shop/static/uploads/noimage.png`}
                                     alt={post.file ?? 'noimage'}
                                     style={{ width: '90%' }}
                                     className="img-thumbnail"

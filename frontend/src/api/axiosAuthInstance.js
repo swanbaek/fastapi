@@ -7,9 +7,9 @@ import { checkTokenExpiration, refreshAccessToken } from '../utils/authUtils';
 
 const axiosAuthInstance = axios.create({
     baseURL: ``, // 프록시 설정으로 baseURL 제거
-    headers: {
-        'Content-Type': 'application/json',
-    },
+    //headers: { //이거 제거해야 함 파일 업로드시에는 multipart/form-data로 전송해야 하는데, Content-Type을 application/json으로 고정하면 안됨
+    //    'Content-Type': 'application/json',
+    //},
 });
 export default axiosAuthInstance;
 //인터셉터 (interceptor) : 요청을 서버로 보내기 직전에 실행되어 요청 내용을 검증하거나 조작하거나 하는 일을 수행

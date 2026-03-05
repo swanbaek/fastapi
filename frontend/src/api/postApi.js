@@ -18,7 +18,7 @@ export const apiCreatePost = async (data) => {
 //지정할 필요없음. 그래서 아래처럼 간단히 작성해도 됨.
 export const apiCreatePostFileUp = async (data) => {
     //인증받은 사용자만 글쓰기 가능하므로 axiosAuthInstance 사용
-    return await axiosAuthInstance.post(`${baseUrl}/posts`, data);
+    return await axiosAuthInstance.post(`${baseUrl}/posts/`, data);
 };
 //--- post 목록 가져오기 ------------------------------
 export const apiFetchPostList = async (page = 1, size = 3, query = undefined) => {
