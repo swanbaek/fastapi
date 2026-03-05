@@ -48,7 +48,7 @@ export default function PostList() {
                         <div style={{ width: '30%' }} className="text-center">
                             {post.file_url ? (
                                 <img
-                                src={`http://myswan.shop/static/uploads/${post.file_name}`}
+                                src={`http://myswan.shop${post.file_url}`}
                                 alt={post.file_name}
                                 style={{ width: '90%' }}
                                 className="img-thumbnail"
