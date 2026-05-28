@@ -1,0 +1,40 @@
+from sqlalchemy import Column, Integer, String, DateTime, func, Text, Enum
+from sqlalchemy.orm import relationship
+from app.core.database import Base
+
+class Member(Base):
+    __tablename__ = "members"
+
+    # 1. Oracle의 GENERATED AS IDENTITY 대응
+    id = Column(Integer, primary_key=True, index=True)
+    
+    name = Column(String(50), nullable=False)
+    
+    # 2. 이메일 (Oracle은 빈 문자열을 NULL로 취급하므로 nullable=False 유지)
+    # SQL: email varchar2(100) UNIQUE
+    email = Column(String(100), unique=True, nullable=False)
+    
+    # SQL: passwd varchar2(100) -> 변수명을 passwd로 맞춰주면 관리가 편합니다.
+    passwd = Column(String(100), nullable=False)
+    
+    # SQL: ROLE varchar2(20) DEFAULT 'USER' CHECK...
+    role = Column(
+        String(20), 
+        server_default='USER', 
+        nullable=False
+    )
+
+    # SQL: create_at DATE DEFAULT sysdate
+    create_at = Column(DateTime, server_default=func.sysdate())    
+
+    # 4. Refresh Token (Oracle에서 Text는 보통 CLOB이나 긴 VARCHAR2로 매핑됨)
+    refresh_token = Column(Text, nullable=True)
+
+    # 5. 시간 설정 (Oracle의 SYSDATE 대응)
+    created_at = Column(DateTime, server_default=func.sysdate())
+    # onupdate는 SQLAlchemy 레벨에서 처리되도록 유지
+    updated_at = Column(DateTime, onupdate=func.sysdate(), server_default=func.sysdate())
+
+    # 관계 설정
+    posts = relationship("Post", back_populates="author", passive_deletes=True)
+===================================

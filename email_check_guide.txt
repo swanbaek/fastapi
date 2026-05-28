@@ -1,0 +1,74 @@
+Email Duplication Check Guide
+
+Frontend (React)
+
+State Management
+
+-   Track whether email duplication check was performed:
+
+    const [email, setEmail] = useState("");
+    const [isEmailChecked, setIsEmailChecked] = useState(false);
+
+Email Check Handler
+
+    const handleCheckEmail = async () => {
+      const res = await axios.get(`/api/check-email?email=${email}`);
+
+      if (res.data.available) {
+        alert("사용 가능한 이메일입니다.");
+        setIsEmailChecked(true);
+      } else {
+        alert("이미 존재하는 이메일입니다.");
+        setIsEmailChecked(false);
+      }
+    };
+
+Submit Validation
+
+    const handleSubmit = (e) => {
+      e.preventDefault();
+
+      if (!isEmailChecked) {
+        alert("이메일 중복 체크를 먼저 해주세요.");
+        return;
+      }
+
+      axios.post("/api/register", { email });
+    };
+
+Reset Check When Email Changes
+
+    const handleEmailChange = (e) => {
+      setEmail(e.target.value);
+      setIsEmailChecked(false);
+    };
+
+------------------------------------------------------------------------
+
+Backend (Spring Boot Example)
+
+Email Check API
+
+    @GetMapping("/check-email")
+    public ResponseEntity<?> checkEmail(@RequestParam String email) {
+        boolean exists = userRepository.existsByEmail(email);
+        return ResponseEntity.ok(Map.of("available", !exists));
+    }
+
+Registration API with Final Duplication Check
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody UserDto dto) {
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("이미 존재하는 이메일입니다.");
+        }
+        // ... user save logic
+        return ResponseEntity.ok("등록 완료");
+    }
+
+Why Backend Validation Is Required
+
+-   Frontend validation alone is insecure.
+-   Users can bypass the browser using Postman or scripts.
+-   Backend ensures final validation.

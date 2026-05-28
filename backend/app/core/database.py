@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 
 load_dotenv()
-DB_URL = os.getenv("DB_URL")
+DB_URL = os.getenv("DB_URL","oracle+oracledb://c##scott:tiger@localhost:1521/?service_name=xe")
 engine = create_engine(DB_URL, pool_pre_ping=True, echo=True)  
 # echo=True는 SQLAlchemy가 실행하는 SQL 쿼리를 콘솔에 출력하도록 하는 설정. 
 # 디버깅 시 유용하지만, 운영 환경에서는 성능 저하를 일으킬 수 있으므로 주의해서 사용해야 합니다.

@@ -24,3 +24,5 @@ export default defineConfig({
     },
   },
 })
+// changeOrigin: true,=>클라이언트(브라우저)에서 보낸 것처럼 안 하고, 
+// 프록시 서버가 보낸 것처럼 위장해서 요청하는 기능

@@ -9,6 +9,7 @@ def get_db_url():
 	return os.getenv("DB_URL")
 
 class Settings(BaseSettings):
+    
     ACCESS_SECRET: str
     REFRESH_SECRET: str
     ACCESS_EXPIRE_MINUTES: int = 15

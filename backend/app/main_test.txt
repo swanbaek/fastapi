@@ -1,0 +1,82 @@
+from fastapi import FastAPI, HTTPException, Depends
+from pydantic import BaseModel
+from sqlalchemy import create_all_engines, Column, String, Integer, DateTime, text
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, Session
+from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware
+
+# 1. 오라클 연결 설정 (사용자 정보에 맞춰 수정하세요)
+# 형식: oracle+oracledb://아이디:비밀번호@호스트:포트/?service_name=서비스이름
+DATABASE_URL = "oracle+oracledb://scott:tiger@localhost:1521/?service_name=xe"
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+# 2. SQLAlchemy 모델 정의 (DB 테이블 매핑)
+class Member(Base):
+    __tablename__ = "members"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(50), nullable=False)
+    email = Column(String(100), unique=True, nullable=False)
+    passwd = Column(String(100), nullable=False)
+    role = Column(String(20), default="USER")
+    create_at = Column(DateTime, default=datetime.now)
+
+# 3. Pydantic 모델 정의 (React에서 보낸 데이터 검증)
+class SignUpRequest(BaseModel):
+    name: str
+    email: str
+    passwd: str
+    role: str = "USER"
+
+app = FastAPI()
+
+# React(Vite)와의 통신을 위한 CORS 설정
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # 테스트용이므로 모두 허용
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# DB 세션 의존성
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# 4. 회원가입 API 엔드포인트
+@app.post("/api/users")
+async def signup(user_data: SignUpRequest, db: Session = Depends(get_db)):
+    try:
+        # 이메일 중복 확인
+        existing_user = db.query(Member).filter(Member.email == user_data.email).first()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="이미 존재하는 이메일입니다.")
+
+        # 새로운 회원 객체 생성
+        new_member = Member(
+            name=user_data.name,
+            email=user_data.email,
+            passwd=user_data.passwd, # 실제 운영 시에는 암호화 필수!
+            role=user_data.role
+        )
+
+        db.add(new_member)
+        db.commit()
+        db.refresh(new_member)
+
+        return {"status": 200, "message": "회원가입 성공", "user_id": new_member.id}
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

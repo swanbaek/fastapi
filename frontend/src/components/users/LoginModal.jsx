@@ -35,14 +35,16 @@ export default function LoginModal({ show, setShowLogin }) {
     const requestLogin = async () => {
         try {
             const response = await apiSignIn(loginUser);
-            //alert(JSON.stringify(response)); //{result:'success',message:'로그인 성공',data:{...}}
+            //alert(JSON.stringify(response)); 
+            // //{result:'success',message:'로그인 성공',data:{...}}
             const { result, message, data } = response;
             if (result === 'success') {
                 //인증받은 사용자일 경우 서버가 보내온 accessToken과 refreshToken을 sessionStorage, localStorage에 저장
                 const { accessToken, refreshToken } = data;
                 sessionStorage.setItem('accessToken', accessToken);
                 localStorage.setItem('refreshToken', refreshToken);
-                //회원정보(payload), 토큰...=>data를 store 전달. 인증받은 사용자 정보 => 전역 state로 관리하자
+                //회원정보(payload), 토큰...=>data를 store 전달. 
+                // 인증받은 사용자 정보 => 전역 state로 관리하자
                 loginAuthUser({ ...data });
             } else {
                 alert(message);
