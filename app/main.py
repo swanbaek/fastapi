@@ -47,19 +47,20 @@ async def favicon():
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    # return templates.TemplateResponse("index.html", {"request": request}) #옛날 버전
+    return templates.TemplateResponse(request=request, name="index.html") #최신 문법
 
 @app.get("/signup", response_class=HTMLResponse)
 async def signup(request: Request):
-    return templates.TemplateResponse("signup.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="signup.html")
 
 @app.get("/mypage", response_class=HTMLResponse)
 async def mypage(request: Request):
-    return templates.TemplateResponse("mypage.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="mypage.html")
 
 @app.get("/users/list", response_class=HTMLResponse)
 async def user_list_page(request: Request):
-    return templates.TemplateResponse("users.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="users.html")
 
 
 # ------- API Routes -------

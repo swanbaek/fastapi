@@ -36,7 +36,7 @@
                     <td>${user.id}</td>
                     <td>${user.name}</td>
                     <td>${user.email}</td>
-                    <td>${user.created_at ? user.created_at.replace('T',' ').slice(0,19) : ''}</td>
+                    <td>${user.create_at ? user.create_at.replace('T',' ').slice(0,19) : ''}</td>
                 `;
                 tbody.appendChild(tr);
             });

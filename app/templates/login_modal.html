@@ -46,7 +46,7 @@
                 const response = await fetch('/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ email, passwd:password })
                 });
                 const result = await response.json();
                 if (response.ok && result.data && result.data.accessToken) {

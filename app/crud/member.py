@@ -16,8 +16,8 @@ def create_member(db: Session, name, email, hashed_pw, created_at, role=None):
     member = Member(
         name=name,
         email=email,
-        password=hashed_pw,
-        created_at=created_at,
+        passwd=hashed_pw,
+        create_at=created_at,
         role=role
     )
     db.add(member)

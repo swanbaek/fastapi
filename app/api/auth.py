@@ -49,7 +49,7 @@ def login(
     if not user:
         raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 틀렸습니다.")
 
-    if not pwd_context.verify(passwd, user.password):
+    if not pwd_context.verify(passwd, user.passwd):
         raise HTTPException(status_code=401, detail="아이디 또는 비밀번호가 틀렸습니다.")
 
     payload = {

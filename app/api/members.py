@@ -12,7 +12,7 @@ router = APIRouter()
 @router.get("/users")
 def list_members(user=Depends(get_current_user_jwt), db: Session = Depends(get_db)):
 	# 관리자만 회원목록 조회 가능
-	if not user or user.get('role') != 'admin':
+	if not user or user.get('role') != 'ADMIN':
 		raise HTTPException(status_code=403, detail='관리자만 회원목록을 볼 수 있습니다.')
 	return member_service.service_get_all_members(db)
 
@@ -29,8 +29,8 @@ def create_user(
 	print("[DEBUG] email:", email)
 	print("[DEBUG] passwd:", passwd)
 	print("[DEBUG] role:", role)
-	password = passwd
-	return member_service.service_create_member(db, name, email, password, role)
+	# password = passwd
+	return member_service.service_create_member(db, name, email, passwd, role)
 
 # 내 정보 조회 (GET /users/me)
 @router.get("/users/me")
